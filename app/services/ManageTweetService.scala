@@ -15,47 +15,40 @@ import org.elasticsearch.search.sort.SortOrder
 @ImplementedBy(classOf[ManageTweetWithElasticsearchService])
 trait ManageTweetService {
   def getTweets: List[Tweet]
+
   def getTweetsByUserId(userId: Long): List[Tweet]
+
   def getTweetsByUserIdList(userIdList: List[Long]): List[Tweet]
 }
 
 class ManageTweetWithElasticsearchService extends ManageTweetService {
   def getTweets: List[Tweet] = {
-    ESClient.init()
-    val rawTweets: ESSearchResult[Tweet] = ESClient.using("http://localhost:9200/") { client =>
-      val config = ESConfig("twitter-clone", "tweet")
-      client.list[Tweet](config) { searcher =>
-        searcher.setSize(200)
-        searcher.addSort("id", SortOrder.DESC)
-      }
+    val client = ESClient.apply("http://localhost:9200/")
+    val config = ESConfig("twitter-clone", "tweet")
+    val rawTweets: ESSearchResult[Tweet] = client.list[Tweet](config) { searcher =>
+      searcher.setSize(200)
+      searcher.addSort("id", SortOrder.DESC)
     }
-    ESClient.shutdown()
     rawTweets.list.filter(_.doc.id != 0).map(_.doc)
   }
 
   def getTweetsByUserId(userId: Long): List[Tweet] = {
-    ESClient.init()
-    val rawTweets: ESSearchResult[Tweet] = ESClient.using("http://localhost:9200/") { client =>
-      val config = ESConfig("twitter-clone", "tweet")
-      client.list[Tweet](config) { searcher =>
-        searcher.setQuery(termQuery("user_id", userId))
-        searcher.setSize(200)
-        searcher.addSort("id", SortOrder.DESC)
-      }
+    val client = ESClient.apply("http://localhost:9200/")
+    val config = ESConfig("twitter-clone", "tweet")
+    val rawTweets: ESSearchResult[Tweet] = client.list[Tweet](config) { searcher =>
+      searcher.setQuery(termQuery("user_id", userId))
+      searcher.setSize(200)
+      searcher.addSort("id", SortOrder.DESC)
     }
-    ESClient.shutdown()
     rawTweets.list.filter(_.doc.id != 0).map(_.doc)
   }
 
   def getTweetsByUserIdList(userIdList: List[Long]): List[Tweet] = {
-    ESClient.init()
-    val rawTweets: ESSearchResult[Tweet] = ESClient.using("http://localhost:9200/") { client =>
-      val config = ESConfig("twitter-clone", "tweet")
-      client.list[Tweet](config) { searcher =>
-        searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
-      }
+    val client = ESClient.apply("http://localhost:9200/")
+    val config = ESConfig("twitter-clone", "tweet")
+    val rawTweets: ESSearchResult[Tweet] = client.list[Tweet](config) { searcher =>
+      searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
     }
-    ESClient.shutdown()
     rawTweets.list.filter(_.doc.id != 0).map(_.doc)
   }
 }

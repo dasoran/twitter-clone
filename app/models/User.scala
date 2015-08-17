@@ -21,16 +21,13 @@ case class User(id: Long,
 object User {
 
   def authenticate(screen_name: String, password: String): Option[User] = {
-    ESClient.init()
-    val userOption: Option[(String, User)] = ESClient.using("http://localhost:9200/") { client =>
-      val config = ESConfig("twitter-clone", "user")
-      client.find[User](config){ searcher =>
-        searcher.setQuery(termQuery("screen_name", screen_name))
-      }
+    val client = ESClient.apply("http://localhost:9200/")
+    val config = ESConfig("twitter-clone", "user")
+    val userOption: Option[(String, User)] = client.find[User](config){ searcher =>
+      searcher.setQuery(termQuery("screen_name", screen_name))
     }
-    ESClient.shutdown()
     userOption.map(_._2)
-      .filter { user => user.password.isDefined}
+      .filter { user => user.password.isDefined }
       .filter { user => BCrypt.checkpw(password, user.password.get) }
   }
 
@@ -38,46 +35,29 @@ object User {
   def create(user: User): Unit = {
     val userForSave = user.copy(password = Option(BCrypt.hashpw(user.password.get, BCrypt.gensalt())))
 
-    ESClient.init()
-    ESClient.using("http://localhost:9200/") { client =>
-      val config = ESConfig("twitter-clone", "user")
-      client.insert(config, userForSave)
-    }
+    val client = ESClient.apply("http://localhost:9200/")
+    val config = ESConfig("twitter-clone", "user")
+    client.insert(config, userForSave)
     /* 検証用 */
-    val rawUsers: ESSearchResult[User] = ESClient.using("http://localhost:9200/") { client =>
-      val config = ESConfig("twitter-clone", "user")
-      client.list[User](config){ searcher =>
-        searcher.setSize(200)
-      }
+    val rawUsers: ESSearchResult[User] = client.list[User](config){ searcher =>
+      searcher.setSize(200)
     }
-
     val followList: List[Long] = rawUsers.list.map(_.doc).map { targetUser =>
-      ESClient.using("http://localhost:9200/") { client =>
-        val config = ESConfig("twitter-clone", "user")
-        val toUpdate = targetUser.copy(follower = user.id :: targetUser.follower)
-        client.update(config, toUpdate.id.toString, toUpdate)
-      }
+      val toUpdate = targetUser.copy(follower = user.id :: targetUser.follower)
+      client.update(config, toUpdate.id.toString, toUpdate)
       targetUser.id
     }
-
-    ESClient.using("http://localhost:9200/") { client =>
-      val config = ESConfig("twitter-clone", "user")
-      val toUpdate = userForSave.copy(follow = followList)
-      client.update(config, toUpdate.id.toString, toUpdate)
-    }
+    val toUpdate = userForSave.copy(follow = followList)
+    client.update(config, toUpdate.id.toString, toUpdate)
     /* 検証用 */
-    ESClient.shutdown()
   }
 
   def findById(id: Long): Option[User] = {
-    ESClient.init()
-    val userOption: Option[(String, User)] = ESClient.using("http://localhost:9200/") { client =>
-      val config = ESConfig("twitter-clone", "user")
-      client.find[User](config){ searcher =>
-        searcher.setQuery(termQuery("id", id))
-      }
+    val client = ESClient.apply("http://localhost:9200/")
+    val config = ESConfig("twitter-clone", "user")
+    val userOption: Option[(String, User)] = client.find[User](config){ searcher =>
+      searcher.setQuery(termQuery("id", id))
     }
-    ESClient.shutdown()
     Option(userOption.get._2)
   }
 }

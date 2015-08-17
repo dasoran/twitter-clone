@@ -24,9 +24,14 @@ class DebugController @Inject()(
   }
 
   def tweetList = Action.async { implicit rs =>
-    val tweetsWithUser = tweetService.getTweets.map { tweet =>
-      (tweet, userService.getUserById(tweet.user_id).get)
-    }
+    val tweets = tweetService.getTweets
+    val userIdList = tweets.map(tweet => tweet.user_id)
+    val users = userService.getUsersByUserIdList(userIdList)
+    val tweetsWithUser = tweets.map { tweet =>
+      (tweet, users.find(user => user.id == tweet.user_id))
+    }.filter{case (tweet, user) => user.isDefined}
+      .map{case (tweet, user) => (tweet, user.get)}
+
     Future {
       Ok(views.html.debug.tweetlist(tweetsWithUser))
     }

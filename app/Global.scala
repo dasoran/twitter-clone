@@ -1,4 +1,6 @@
+import jp.co.bizreach.elasticsearch4s.ESClient
 import play.api.{Application, GlobalSettings, Play}
+
 //import utils.ElasticsearchUtil
 
 object Global extends GlobalSettings {
@@ -10,6 +12,7 @@ object Global extends GlobalSettings {
       super.onStart(app)
 
       //ElasticsearchUtil.init(Play.current)
+      ESClient.init()
 
     } catch {
       case ex: Throwable =>
@@ -17,4 +20,9 @@ object Global extends GlobalSettings {
           logger.error("Starting up process failed !!!", ex)
         throw ex
     }
+
+  override def onStop(app: Application) {
+    ESClient.shutdown()
+    logger.info("Application shutdown...")
+  }
 }

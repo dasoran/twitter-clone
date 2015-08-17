@@ -33,9 +33,18 @@ class RootController @Inject()(
   def index = StackAction(AuthorityKey -> NormalUser) { implicit rs =>
     val user = loggedIn
     val tweets = tweetService.getTweetsByUserIdList(user.follow.map(toLong))
+
+    //val tweetsWithUser = tweets.map {
+    // tweet => (tweet, userService.getUserById(tweet.user_id).get)
+    // }
+
+    val userIdList = tweets.map(tweet => tweet.user_id)
+    val users = userService.getUsersByUserIdList(userIdList)
     val tweetsWithUser = tweets.map { tweet =>
-      (tweet, userService.getUserById(tweet.user_id).get)
-    }
+      (tweet, users.find(user => user.id == tweet.user_id))
+    }.filter{case (tweet, user) => user.isDefined}
+      .map{case (tweet, user) => (tweet, user.get)}
+
     Ok(views.html.index(tweetsWithUser))
   }
 
