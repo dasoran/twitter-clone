@@ -6,3 +6,10 @@ target
 /.project
 /.settings
 /RUNNING_PID
+/script/user.json
+/script/tweet.json
+/script/imgwget.sh
+
+
+
+
