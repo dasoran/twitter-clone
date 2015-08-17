@@ -1,0 +1,142 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "pos_filter": {
+          "type": "kuromoji_part_of_speech",
+          "stoptags": [
+            "助詞-格助詞-一般",
+            "助詞-終助詞"
+          ]
+        },
+        "greek_lowercase_filter": {
+          "type": "lowercase",
+          "language": "greek"
+        }
+      },
+      "tokenizer": {
+        "kuromoji": {
+          "type": "kuromoji_tokenizer"
+        },
+        "ngram_tokenizer": {
+          "type": "nGram",
+          "min_gram": "2",
+          "max_gram": "3",
+          "token_chars": [
+            "letter",
+            "digit"
+          ]
+        }
+      },
+      "analyzer": {
+        "kuromoji_analyzer": {
+          "type": "custom",
+          "tokenizer": "kuromoji_tokenizer",
+          "filter": [
+            "kuromoji_baseform",
+            "pos_filter",
+            "greek_lowercase_filter",
+            "cjk_width"
+          ]
+        },
+        "ngram_analyzer": {
+          "tokenizer": "ngram_tokenizer"
+        }
+      }
+    }
+  },
+  "mappings": {
+    "user": {
+      "_source": {
+        "enabled": true
+      },
+      "_all": {
+        "enabled": true,
+        "analyzer": "kuromoji_analyzer"
+      },
+      "_id": {
+        "path": "id"
+      },
+      "properties": {
+        "id": {
+          "type": "long",
+          "index": "not_analyzed"
+        },
+        "password": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "screen_name": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "name": {
+          "type": "string",
+          "index": "analyzed",
+          "analyzer": "ngram_analyzer"
+        },
+        "description": {
+          "type": "string",
+          "index": "analyzed",
+          "analyzer": "kuromoji_analyzer"
+        },
+        "profile_image_url": {
+          "type": "string",
+          "index": "not_analyzed"
+        },
+        "follow":{
+          "type": "long",
+          "index": "not_analyzed"
+        },
+        "follower":{
+          "type": "long",
+          "index": "not_analyzed"
+        },
+        "email": {
+          "type": "string",
+          "index": "not_analyzed"
+        }
+      }
+    },
+    "tweet": {
+      "_source": {
+        "enabled": true
+      },
+      "_all": {
+        "enabled": true,
+        "analyzer": "kuromoji_analyzer"
+      },
+      "_id": {
+        "path": "id"
+      },
+      "properties": {
+        "id": {
+          "type": "long",
+          "index": "not_analyzed"
+        },
+        "user_id": {
+          "type": "long",
+          "index": "not_analyzed"
+        },
+        "text": {
+          "type": "string",
+          "index": "analyzed",
+          "analyzer": "kuromoji_analyzer"
+        },
+        "created_at":{
+          "type": "date",
+          "store": "yes",
+          "format": "EE MMM d HH:mm:ss Z yyyy"
+        },
+        "retweet_count":{
+          "type": "integer",
+          "index": "not_analyzed"
+        },
+        "favorite_count":{
+          "type": "integer",
+          "index": "not_analyzed"
+        }
+      }
+    }
+  }
+}

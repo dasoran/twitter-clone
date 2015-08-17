@@ -1,0 +1,32 @@
+@(loginForm: Form[Option[User]])(implicit messages: Messages)
+
+@* テンプレートで利用可能なヘルパーをインポート *@
+@import helper._
+
+@* main.scala.htmlを呼び出す *@
+@main("ユーザ一覧") {
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+        @form(routes.AuthController.authenticate, 'role -> "form") {
+          <fieldset>
+            <div class="form-group">
+            @inputText(loginForm("loginInputUserId1"), '_label -> "User id", 'class -> "form-control")
+            </div>
+            <div class="form-group">
+            @inputPassword(loginForm("loginInputPassword1"), '_label -> "Password", 'class -> "form-control")
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+          </fieldset>
+        }
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+  </div>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="@routes.Assets.versioned("js/jquery.min.js")"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="@routes.Assets.versioned("js/bootstrap.min.js")"></script>
+}

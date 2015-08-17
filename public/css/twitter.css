@@ -1,0 +1,188 @@
+.index-header {
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #eee;
+  text-align: center;
+}
+
+
+/*
+ * Profile
+ */
+.profile-header {
+  margin: 10px 0;
+  padding-top: 30px;
+  border-radius: 5px;
+  background-color: #eee;
+}
+
+.profile-floatcontainer:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+
+.profile-icon {
+  margin-left: 30px;
+  float: left;
+}
+
+.profile-icon > img {
+  width: 128px;
+  height: 128px;
+}
+
+.profile-main {
+  width: calc(100% - 128px - 100px);
+  margin-left: 30px;
+  float: left;
+}
+
+.profile-username {
+  font-size: 2em;
+}
+
+.profile-relation-with-you {
+  margin-top: 20px;
+}
+
+.profile-relation {
+  width: 100%;
+  margin-top: 30px;
+  color: #fff;
+  text-align: center;
+}
+
+.profile-relation > a:link { color: #fff; }
+.profile-relation > a:visited { color: #fff; }
+.profile-relation > a:hover { color: #fff; }
+.profile-relation > a:active { color: #fff; }
+
+.profile-relation:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+
+.profile-follow {
+  width: 50%;
+  padding: 30px 0;
+  background-color: #aaf;
+  font-size: 2em;
+  border-radius: 0 0 0 5px;
+  float: left;
+}
+
+.profile-follower {
+  width: 50%;
+  padding: 30px 0;
+  background-color: #faa;
+  font-size: 2em;
+  border-radius: 0 0 5px 0;
+  float: left;
+}
+
+/*
+ * One Tweet in Timeline
+ */
+.follow-item {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #eef;
+}
+
+.follow-item:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+.follow-img {
+  float: left;
+}
+
+.follow-img > img {
+  width: 64px;
+  height: 64px;
+}
+
+.follow-main {
+  width: calc(100% - 64px - 40px);
+  margin-left: 20px;
+  float: left;
+}
+
+.follow-namecontainer {
+  vertical-align:bottom;
+}
+
+.follow-namecontainer > div {
+  display: inline;
+}
+
+.follow-username {
+  font-size: 1.5em;
+}
+
+
+/*
+ * One Tweet in Timeline
+ */
+.timeline-tweet {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #eef;
+}
+
+.tweet-main:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+.tweet-img {
+  float: left;
+}
+
+.tweet-img > a > img {
+  width: 64px;
+  height: 64px;
+}
+
+.tweet-text {
+  width: calc(100% - 64px - 20px);
+  float: left;
+  margin-left: 10px;
+}
+
+.tweet-footer {
+  margin-top: 10px;
+}
+
+.tweet-footer:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+.tweet-footer > div + div {
+  margin-left: 10px;
+}
+
+.tweet-screenname {
+  float: left;
+}
+
+.tweet-username {
+  float: left;
+}
+
+.tweet-diffdate {
+  float: left;
+}
+
+
