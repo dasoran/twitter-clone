@@ -24,16 +24,16 @@ trait ManageTweetService {
   def getTweetsByUserIdList(userIdList: List[Long]): Future[List[Tweet]]
 }
 
-class ManageTweetWithElasticsearchService extends ManageTweetService {
-
-  def toLong: Any => Long = {
-    case x: Integer => x.toLong
-    case x: Long => x
-  }
-
-  def serverUrl = "http://localhost:9200"
+class ManageTweetWithElasticsearchService extends ManageTweetService with ManageElasticsearch {
 
   def config = ESConfig("twitter-clone", "tweet")
+
+  def mappingIdToLongInTweets(tweets: List[Tweet]) =
+    tweets.map(tweet => tweet.copy(
+        id = toLong(tweet.id),
+        user_id = toLong(tweet.user_id)
+      )
+    )
 
   def getTweets: Future[List[Tweet]] =
     AsyncESClient.apply(serverUrl).listAsync[Tweet](config) { searcher =>
@@ -41,7 +41,7 @@ class ManageTweetWithElasticsearchService extends ManageTweetService {
         .setSize(200)
         .addSort("id", SortOrder.DESC)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
-      .map(_.map(tweet => tweet.copy(id = toLong(tweet.id), user_id = toLong(tweet.user_id))))
+      .map(mappingIdToLongInTweets)
 
   def getTweetsByUserId(userId: Long): Future[List[Tweet]] =
     AsyncESClient.apply(serverUrl).listAsync[Tweet](config) { searcher =>
@@ -50,11 +50,11 @@ class ManageTweetWithElasticsearchService extends ManageTweetService {
         .setSize(200)
         .addSort("id", SortOrder.DESC)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
-      .map(_.map(tweet => tweet.copy(id = toLong(tweet.id), user_id = toLong(tweet.user_id))))
+      .map(mappingIdToLongInTweets)
 
   def getTweetsByUserIdList(userIdList: List[Long]): Future[List[Tweet]] =
     AsyncESClient.apply(serverUrl).listAsync[Tweet](config) { searcher =>
       searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
-      .map(_.map(tweet => tweet.copy(id = toLong(tweet.id), user_id = toLong(tweet.user_id))))
+      .map(mappingIdToLongInTweets)
 }

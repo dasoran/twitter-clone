@@ -25,48 +25,40 @@ trait ManageUserService {
   def insertUser(user: User): Future[Any]
 }
 
-class ManageUserWithElasticsearchService extends ManageUserService {
+class ManageUserWithElasticsearchService extends ManageUserService with ManageElasticsearch {
 
-  def toLong: Any => Long = {
-    case x: Integer => x.toLong
-    case x: Long => x
-  }
+  val config = ESConfig("twitter-clone", "user")
 
-  def serverUrl = "http://localhost:9200"
+  private def mapping(user: User) = user.copy(
+    id = toLong(user.id),
+    follow = user.follow.map(toLong),
+    follower = user.follower.map(toLong)
+  )
 
-  def config = ESConfig("twitter-clone", "user")
+  def mappingIdToLongInUser(users: Option[User]) = users.map(mapping)
+
+  def mappingIdToLongInUsers(users: List[User]) = users.map(mapping)
+
 
   def getUserById(id: Long): Future[Option[User]] =
     AsyncESClient.apply(serverUrl).findAsync[User](config){ searcher =>
       searcher.setQuery(termQuery("_id", id))
     }.map(_.map(_._2))
-      .map(_.map(user => user.copy(
-        id = toLong(user.id),
-        follow = user.follow.map(toLong),
-        follower = user.follower.map(toLong)))
-      )
+      .map(mappingIdToLongInUser)
 
 
   def getUserByScreenName(screenName: String): Future[Option[User]] =
     AsyncESClient.apply(serverUrl).findAsync[User](config) { searcher =>
       searcher.setQuery(termQuery("screen_name", screenName))
     }.map(_.map(_._2))
-      .map(_.map(user => user.copy(
-        id = toLong(user.id),
-        follow = user.follow.map(toLong),
-        follower = user.follower.map(toLong)))
-      )
+      .map(mappingIdToLongInUser)
 
 
   def getUsers: Future[List[User]] =
     AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
       searcher.setSize(200)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
-      .map(_.map(user => user.copy(
-        id = toLong(user.id),
-        follow = user.follow.map(toLong),
-        follower = user.follower.map(toLong)))
-      )
+      .map(mappingIdToLongInUsers)
 
 
   def getUsersByUserIdList(userIdList: List[Long]): Future[List[User]] =
@@ -75,11 +67,7 @@ class ManageUserWithElasticsearchService extends ManageUserService {
         .setQuery(QueryBuilders.termsQuery("id", userIdList: _*))
         .setSize(200)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
-      .map(_.map(user => user.copy(
-        id = toLong(user.id),
-        follow = user.follow.map(toLong),
-        follower = user.follower.map(toLong)))
-      )
+      .map(mappingIdToLongInUsers)
 
   // insertだから待つ必要なし
   // もしかしたらあとでuniqueチェック的なものでbool返す必要が有るかもしれない。それをするなら待たないといけないかも....
