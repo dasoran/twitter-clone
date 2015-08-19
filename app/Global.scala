@@ -1,7 +1,6 @@
 import jp.co.bizreach.elasticsearch4s.{AsyncESClient, ESClient}
 import play.api.{Application, GlobalSettings, Play}
 
-//import utils.ElasticsearchUtil
 
 object Global extends GlobalSettings {
 
@@ -11,7 +10,6 @@ object Global extends GlobalSettings {
     try {
       super.onStart(app)
 
-      //ElasticsearchUtil.init(Play.current)
       AsyncESClient.init()
 
     } catch {

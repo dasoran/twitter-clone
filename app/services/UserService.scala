@@ -3,7 +3,6 @@ package services
 
 import javax.inject.Inject
 
-import jp.co.bizreach.elasticsearch4s._
 import org.mindrot.jbcrypt.BCrypt
 
 import models._

@@ -1,10 +1,10 @@
 package controllers
 
 import jp.t2v.lab.play2.auth.{CookieTokenAccessor, AuthConfig}
-import models.{User, Role, Administrator, NormalUser}
+import models.Role
 import play.api.mvc.{Result, RequestHeader}
 import play.api.mvc.Results._
-import services.{ManageUserWithElasticsearchService, UserService, ManageUserService}
+import services.ManageUserWithElasticsearchService
 
 import scala.concurrent.{Future, ExecutionContext}
 import scala.reflect._

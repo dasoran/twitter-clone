@@ -7,7 +7,6 @@ import play.api.mvc._
 import services.{ManageTweetService, ManageUserService}
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 class DebugController @Inject()(
                                  val messagesApi: MessagesApi,

@@ -1,14 +1,11 @@
 package controllers
 
 import jp.t2v.lab.play2.auth.AuthElement
-import models.{User, NormalUser, Tweet}
-import org.elasticsearch.index.query.QueryBuilders
-import org.elasticsearch.search.sort.SortOrder
+import models.NormalUser
 import play.api.mvc._
 import play.api.i18n.{MessagesApi, I18nSupport}
 
 
-import jp.co.bizreach.elasticsearch4s._
 
 import javax.inject.Inject
 import services.{ManageTweetService, ManageUserService}
