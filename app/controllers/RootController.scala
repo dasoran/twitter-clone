@@ -25,14 +25,10 @@ with I18nSupport with AuthElement with AuthConfigImpl {
   /**
    * 一覧表示
    */
-  def toLong: Any => Long = {
-    case x: Integer => x.toLong
-    case x: Long => x
-  }
 
   def index = AsyncStack(AuthorityKey -> NormalUser) { implicit rs =>
     val user = loggedIn
-    manageTweetService.getTweetsByUserIdList(user.follow.map(toLong)).flatMap { tweets =>
+    manageTweetService.getTweetsByUserIdList(user.follow).flatMap { tweets =>
       manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
         val tweetsWithUser = tweets.map { tweet =>
           (tweet, users.find(user => user.id == tweet.user_id))
@@ -60,7 +56,7 @@ with I18nSupport with AuthElement with AuthConfigImpl {
 
   def follow(screenName: String) = Action.async { implicit rs =>
     manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-      manageUserService.getUsersByUserIdList(userOption.get.follow.map(toLong)).map { following =>
+      manageUserService.getUsersByUserIdList(userOption.get.follow).map { following =>
         Ok(views.html.follow(following))
       }
     }

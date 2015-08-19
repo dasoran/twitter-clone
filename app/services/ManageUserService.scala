@@ -27,6 +27,11 @@ trait ManageUserService {
 
 class ManageUserWithElasticsearchService extends ManageUserService {
 
+  def toLong: Any => Long = {
+    case x: Integer => x.toLong
+    case x: Long => x
+  }
+
   def serverUrl = "http://localhost:9200"
 
   def config = ESConfig("twitter-clone", "user")
@@ -35,18 +40,33 @@ class ManageUserWithElasticsearchService extends ManageUserService {
     AsyncESClient.apply(serverUrl).findAsync[User](config){ searcher =>
       searcher.setQuery(termQuery("_id", id))
     }.map(_.map(_._2))
+      .map(_.map(user => user.copy(
+        id = toLong(user.id),
+        follow = user.follow.map(toLong),
+        follower = user.follower.map(toLong)))
+      )
 
 
   def getUserByScreenName(screenName: String): Future[Option[User]] =
     AsyncESClient.apply(serverUrl).findAsync[User](config) { searcher =>
       searcher.setQuery(termQuery("screen_name", screenName))
     }.map(_.map(_._2))
+      .map(_.map(user => user.copy(
+        id = toLong(user.id),
+        follow = user.follow.map(toLong),
+        follower = user.follower.map(toLong)))
+      )
 
 
   def getUsers: Future[List[User]] =
     AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
       searcher.setSize(200)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
+      .map(_.map(user => user.copy(
+        id = toLong(user.id),
+        follow = user.follow.map(toLong),
+        follower = user.follower.map(toLong)))
+      )
 
 
   def getUsersByUserIdList(userIdList: List[Long]): Future[List[User]] =
@@ -54,6 +74,11 @@ class ManageUserWithElasticsearchService extends ManageUserService {
       searcher.setQuery(QueryBuilders.termsQuery("id", userIdList: _*))
       searcher.setSize(200)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
+      .map(_.map(user => user.copy(
+        id = toLong(user.id),
+        follow = user.follow.map(toLong),
+        follower = user.follower.map(toLong)))
+      )
 
   // insertだから待つ必要なし
   // もしかしたらあとでuniqueチェック的なものでbool返す必要が有るかもしれない。それをするなら待たないといけないかも....

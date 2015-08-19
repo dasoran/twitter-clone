@@ -18,10 +18,6 @@ class DebugController @Inject()(
   /**
    * 一覧表示
    */
-  def toLong: Any => Long = {
-    case x: Integer => x.toLong
-    case x: Long => x
-  }
 
   def tweetList = Action.async { implicit rs =>
     manageTweetService.getTweets.flatMap { tweets =>
