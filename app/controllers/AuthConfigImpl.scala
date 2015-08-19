@@ -4,11 +4,15 @@ import jp.t2v.lab.play2.auth.{CookieTokenAccessor, AuthConfig}
 import models.{User, Role, Administrator, NormalUser}
 import play.api.mvc.{Result, RequestHeader}
 import play.api.mvc.Results._
+import services.{ManageUserWithElasticsearchService, UserService, ManageUserService}
 
 import scala.concurrent.{Future, ExecutionContext}
 import scala.reflect._
 
 trait AuthConfigImpl extends AuthConfig {
+
+  // 依存解決を諦めた図
+  val _manageUserService = new ManageUserWithElasticsearchService
 
   /**
    * ユーザを識別するIDの型です。String や Int や Long などが使われるでしょう。
@@ -46,7 +50,7 @@ trait AuthConfigImpl extends AuthConfig {
    * ユーザIDからUserブジェクトを取得するアルゴリズムを指定します。
    * 任意の処理を記述してください。
    */
-  def resolveUser(id: Id)(implicit ctx: ExecutionContext) = Future.successful(User.findById(id))
+  def resolveUser(id: Id)(implicit ctx: ExecutionContext) = _manageUserService.getUserById(id)
 
   /**
    * ログインが成功した際に遷移する先を指定します。

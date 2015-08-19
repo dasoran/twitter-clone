@@ -6,55 +6,74 @@ import jp.co.bizreach.elasticsearch4s._
 import models.User
 import org.elasticsearch.index.query.QueryBuilders
 
+import scala.concurrent._
+import scala.concurrent.ExecutionContext.Implicits.global
+
 /**
  * Created by kyota.yasuda on 15/08/13.
  */
 @ImplementedBy(classOf[ManageUserWithElasticsearchService])
 trait ManageUserService {
-  def getUserById(id: Long): Option[User]
+  def getUserById(id: Long): Future[Option[User]]
 
-  def getUserByScreenName(screenName: String): Option[User]
+  def getUserByScreenName(screenName: String): Future[Option[User]]
 
-  def getUsers: List[User]
+  def getUsers: Future[List[User]]
 
-  def getUsersByUserIdList(userIdList: List[Long]): List[User]
+  def getUsersByUserIdList(userIdList: List[Long]): Future[List[User]]
+
+  def insertUser(user: User): Future[Any]
 }
 
 class ManageUserWithElasticsearchService extends ManageUserService {
-  def getUserById(id: Long): Option[User] = {
-    val client = ESClient.apply("http://localhost:9200/")
-    val config = ESConfig("twitter-clone", "user")
-    val rawUserOption: Option[(String, User)] = client.find[User](config){ searcher =>
+
+  def serverUrl = "http://localhost:9200"
+
+  def config = ESConfig("twitter-clone", "user")
+
+  def getUserById(id: Long): Future[Option[User]] =
+    AsyncESClient.apply(serverUrl).findAsync[User](config){ searcher =>
       searcher.setQuery(termQuery("_id", id))
-    }
-    rawUserOption.map(_._2)
-  }
+    }.map(_.map(_._2))
 
-  def getUserByScreenName(screenName: String): Option[User] = {
-    val client = ESClient.apply("http://localhost:9200/")
-    val config = ESConfig("twitter-clone", "user")
-    val rawUserOption: Option[(String, User)] = client.find[User](config) { searcher =>
+
+  def getUserByScreenName(screenName: String): Future[Option[User]] =
+    AsyncESClient.apply(serverUrl).findAsync[User](config) { searcher =>
       searcher.setQuery(termQuery("screen_name", screenName))
-    }
-    rawUserOption.map(_._2)
-  }
+    }.map(_.map(_._2))
 
-  def getUsers: List[User] = {
-    val client = ESClient.apply("http://localhost:9200/")
-    val config = ESConfig("twitter-clone", "user")
-    val rawUsers: ESSearchResult[User] = client.list[User](config){ searcher =>
+
+  def getUsers: Future[List[User]] =
+    AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
       searcher.setSize(200)
-    }
-    rawUsers.list.filter(_.doc.id != 0).map(_.doc)
-  }
+    }.map(_.list.filter(_.doc.id != 0).map(_.doc))
 
-  def getUsersByUserIdList(userIdList: List[Long]): List[User] = {
-    val client = ESClient.apply("http://localhost:9200/")
-    val config = ESConfig("twitter-clone", "user")
-    val rawUsers: ESSearchResult[User] = client.list[User](config){ searcher =>
+
+  def getUsersByUserIdList(userIdList: List[Long]): Future[List[User]] =
+    AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
       searcher.setQuery(QueryBuilders.termsQuery("id", userIdList: _*))
       searcher.setSize(200)
+    }.map(_.list.filter(_.doc.id != 0).map(_.doc))
+
+  // insertだから待つ必要なし
+  // もしかしたらあとでuniqueチェック的なものでbool返す必要が有るかもしれない。それをするなら待たないといけないかも....
+  def insertUser(user: User): Future[Any] = {
+    AsyncESClient.apply(serverUrl).insertAsync(config, user)
+
+    /* 検証用 */
+    .flatMap{f =>
+      AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
+        searcher.setSize(200)
+      }.flatMap { users =>
+        val followList = users.list.map(_.doc).map { targetUser =>
+          val toUpdate = targetUser.copy(follower = user.id :: targetUser.follower)
+          AsyncESClient.apply(serverUrl).updateAsync(config, toUpdate.id.toString, toUpdate)
+          targetUser.id
+        }
+        val toUpdate = user.copy(follow = followList)
+        AsyncESClient.apply(serverUrl).updateAsync(config, toUpdate.id.toString, toUpdate)
+        /* 検証用 */
+      }
     }
-    rawUsers.list.filter(_.doc.id != 0).map(_.doc)
   }
 }

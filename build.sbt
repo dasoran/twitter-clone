@@ -26,7 +26,7 @@ libraryDependencies ++= Seq(
 //    ExclusionRule(organization = "org.apache.lucene", name = "lucene-spatial"),
 //    ExclusionRule(organization = "org.apache.lucene", name = "lucene-suggest")
 //    )
-  "jp.co.bizreach" %% "elastic-scala-httpclient" % "1.0.4",
+  "jp.co.bizreach" %% "elastic-scala-httpclient" % "1.0.5",
   "jp.t2v" %% "play2-auth"        % "0.14.0",
   play.sbt.Play.autoImport.cache
 )

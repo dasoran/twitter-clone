@@ -11,8 +11,8 @@ import scala.concurrent.Future
 
 class DebugController @Inject()(
                                  val messagesApi: MessagesApi,
-                                 val userService: ManageUserService,
-                                 val tweetService: ManageTweetService)
+                                 val manageUserService: ManageUserService,
+                                 val manageTweetService: ManageTweetService)
   extends Controller with I18nSupport {
 
   /**
@@ -24,23 +24,22 @@ class DebugController @Inject()(
   }
 
   def tweetList = Action.async { implicit rs =>
-    val tweets = tweetService.getTweets
-    val userIdList = tweets.map(tweet => tweet.user_id)
-    val users = userService.getUsersByUserIdList(userIdList)
-    val tweetsWithUser = tweets.map { tweet =>
-      (tweet, users.find(user => user.id == tweet.user_id))
-    }.filter{case (tweet, user) => user.isDefined}
-      .map{case (tweet, user) => (tweet, user.get)}
-
-    Future {
-      Ok(views.html.debug.tweetlist(tweetsWithUser))
+    manageTweetService.getTweets.flatMap { tweets =>
+      manageUserService.getUsersByUserIdList(tweets.map(_.user_id))
+        .map { users =>
+          val tweetsWithUser = tweets.map { tweet =>
+            (tweet, users.find(user => user.id == tweet.user_id))
+          }.filter { case (tweet, user) => user.isDefined }
+            .map { case (tweet, user) => (tweet, user.get) }
+          Ok(views.html.debug.tweetlist(tweetsWithUser))
+        }
     }
   }
 
   def userList = Action.async { implicit rs =>
-    val users = userService.getUsers
-    Future {
-      Ok(views.html.debug.userlist(users))
-    }
+    manageUserService.getUsers
+      .map { users =>
+        Ok(views.html.debug.userlist(users))
+      }
   }
 }

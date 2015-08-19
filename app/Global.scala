@@ -1,4 +1,4 @@
-import jp.co.bizreach.elasticsearch4s.ESClient
+import jp.co.bizreach.elasticsearch4s.{AsyncESClient, ESClient}
 import play.api.{Application, GlobalSettings, Play}
 
 //import utils.ElasticsearchUtil
@@ -12,7 +12,7 @@ object Global extends GlobalSettings {
       super.onStart(app)
 
       //ElasticsearchUtil.init(Play.current)
-      ESClient.init()
+      AsyncESClient.init()
 
     } catch {
       case ex: Throwable =>
@@ -22,7 +22,8 @@ object Global extends GlobalSettings {
     }
 
   override def onStop(app: Application) {
-    ESClient.shutdown()
+    AsyncESClient.shutdown()
+
     logger.info("Application shutdown...")
   }
 }

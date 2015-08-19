@@ -13,61 +13,56 @@ import jp.co.bizreach.elasticsearch4s._
 import javax.inject.Inject
 import services.{ManageTweetService, ManageUserService}
 
-import scala.concurrent.Future
+import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class RootController @Inject()(
                                 val messagesApi: MessagesApi,
-                                val userService: ManageUserService,
-                                val tweetService: ManageTweetService) extends Controller
-    with I18nSupport with AuthElement with AuthConfigImpl {
+                                val manageUserService: ManageUserService,
+                                val manageTweetService: ManageTweetService) extends Controller
+with I18nSupport with AuthElement with AuthConfigImpl {
 
   /**
    * 一覧表示
    */
   def toLong: Any => Long = {
-    case x: Integer  => x.toLong
+    case x: Integer => x.toLong
     case x: Long => x
   }
 
-  def index = StackAction(AuthorityKey -> NormalUser) { implicit rs =>
+  def index = AsyncStack(AuthorityKey -> NormalUser) { implicit rs =>
     val user = loggedIn
-    val tweets = tweetService.getTweetsByUserIdList(user.follow.map(toLong))
+    manageTweetService.getTweetsByUserIdList(user.follow.map(toLong)).flatMap { tweets =>
+      manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
+        val tweetsWithUser = tweets.map { tweet =>
+          (tweet, users.find(user => user.id == tweet.user_id))
+        }.filter { case (tweet, user) => user.isDefined }
+          .map { case (tweet, user) => (tweet, user.get) }
 
-    //val tweetsWithUser = tweets.map {
-    // tweet => (tweet, userService.getUserById(tweet.user_id).get)
-    // }
-
-    val userIdList = tweets.map(tweet => tweet.user_id)
-    val users = userService.getUsersByUserIdList(userIdList)
-    val tweetsWithUser = tweets.map { tweet =>
-      (tweet, users.find(user => user.id == tweet.user_id))
-    }.filter{case (tweet, user) => user.isDefined}
-      .map{case (tweet, user) => (tweet, user.get)}
-
-    Ok(views.html.index(tweetsWithUser))
+        Ok(views.html.index(tweetsWithUser))
+      }
+    }
   }
 
-  def welcome = Action { implicit rs =>
-    Ok(views.html.welcome())
+  def welcome = Action.async { implicit rs =>
+    Future(Ok(views.html.welcome()))
   }
 
   def profile(screenName: String) = Action.async { implicit rs =>
-    val user = userService.getUserByScreenName(screenName).get
-    val tweets = tweetService.getTweetsByUserId(user.id)
-    val tweetsWithUser = tweets.map((_, user))
-    Future {
-      Ok(views.html.profile(user, tweetsWithUser))
+    manageUserService.getUserByScreenName(screenName).flatMap{userOption =>
+      manageTweetService.getTweetsByUserId(userOption.get.id).map { tweets =>
+        Ok(views.html.profile(userOption.get, tweets.map((_, userOption.get))))
+      }
     }
   }
 
   def favicon = TODO
 
   def follow(screenName: String) = Action.async { implicit rs =>
-    val user = userService.getUserByScreenName(screenName).get
-    val following = userService.getUsersByUserIdList(user.follow.map(toLong))
-    Future {
-      Ok(views.html.follow(following))
+    manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
+      manageUserService.getUsersByUserIdList(userOption.get.follow.map(toLong)).map { following =>
+        Ok(views.html.follow(following))
+      }
     }
   }
 }

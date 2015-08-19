@@ -3,13 +3,12 @@ package controllers
 import java.security.SecureRandom
 import javax.inject.Inject
 
-import jp.co.bizreach.elasticsearch4s._
 import jp.t2v.lab.play2.auth.LoginLogout
 import models._
-import models.forms.{LoginForm, SignupForm}
+import models.forms.SignupForm
 import play.api.data._
 import play.api.data.Forms._
-import validation.Constraints._
+import services.UserService
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
 
@@ -18,8 +17,9 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Random
 
 
-class AuthController @Inject()(val messagesApi: MessagesApi) extends Controller
-with I18nSupport with LoginLogout with AuthConfigImpl{
+class AuthController @Inject()(val messagesApi: MessagesApi,
+                               val userService: UserService) extends Controller
+with I18nSupport with LoginLogout with AuthConfigImpl {
 
 
   val signupForm = Form(
@@ -34,7 +34,7 @@ with I18nSupport with LoginLogout with AuthConfigImpl{
     mapping(
       "loginInputUserId1" -> nonEmptyText(maxLength = 20),
       "loginInputPassword1" -> nonEmptyText(maxLength = 50)
-    )(User.authenticate)(_.map(u => (u.screen_name, "")))
+    )(userService.authenticate)(_.map(u => (u.screen_name, "")))
       .verifying("Invalid id or password", result => result.isDefined)
   )
 
@@ -48,8 +48,8 @@ with I18nSupport with LoginLogout with AuthConfigImpl{
     }
   }
 
-  def login = Action { implicit request =>
-    Ok(views.html.login(loginForm))
+  def login = Action.async { implicit request =>
+    Future(Ok(views.html.login(loginForm)))
   }
 
   def authenticate = Action.async { implicit request =>
@@ -86,7 +86,7 @@ with I18nSupport with LoginLogout with AuthConfigImpl{
           email = Option(form.signupInputEmail1)
         )
 
-        User.create(newUser)
+        userService.create(newUser)
         Future {
           Redirect(routes.RootController.index)
         }
