@@ -71,8 +71,9 @@ class ManageUserWithElasticsearchService extends ManageUserService {
 
   def getUsersByUserIdList(userIdList: List[Long]): Future[List[User]] =
     AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
-      searcher.setQuery(QueryBuilders.termsQuery("id", userIdList: _*))
-      searcher.setSize(200)
+      searcher
+        .setQuery(QueryBuilders.termsQuery("id", userIdList: _*))
+        .setSize(200)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
       .map(_.map(user => user.copy(
         id = toLong(user.id),

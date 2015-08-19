@@ -37,16 +37,18 @@ class ManageTweetWithElasticsearchService extends ManageTweetService {
 
   def getTweets: Future[List[Tweet]] =
     AsyncESClient.apply(serverUrl).listAsync[Tweet](config) { searcher =>
-      searcher.setSize(200)
-      searcher.addSort("id", SortOrder.DESC)
+      searcher
+        .setSize(200)
+        .addSort("id", SortOrder.DESC)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
       .map(_.map(tweet => tweet.copy(id = toLong(tweet.id), user_id = toLong(tweet.user_id))))
 
   def getTweetsByUserId(userId: Long): Future[List[Tweet]] =
     AsyncESClient.apply(serverUrl).listAsync[Tweet](config) { searcher =>
-      searcher.setQuery(termQuery("user_id", userId))
-      searcher.setSize(200)
-      searcher.addSort("id", SortOrder.DESC)
+      searcher
+        .setQuery(termQuery("user_id", userId))
+        .setSize(200)
+        .addSort("id", SortOrder.DESC)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
       .map(_.map(tweet => tweet.copy(id = toLong(tweet.id), user_id = toLong(tweet.user_id))))
 
