@@ -1,12 +1,18 @@
 @* このテンプレートの引数 *@
-@(uservecs: List[(Uservector)])
+@(uservecs: List[Uservector], groups: Set[Group])
 
 @* main.scala.htmlを呼び出す *@
 @main("ユーザ一覧") {
-  @uservecs.size
+  @uservecs.size, @groups.size
   <br>
   @uservecs.map {uservec =>
           @uservec.id, @uservec.to
+    <br>
+  }
+  <br>
+  @groups.map {group =>
+    [@group.id]<br>
+    @group.users.mkString(",")
     <br>
   }
 }

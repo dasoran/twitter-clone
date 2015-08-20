@@ -14,6 +14,7 @@ POST        /authenticate              controllers.AuthController.authenticate
 GET         /debug/userlist            controllers.DebugController.userList
 GET         /debug/tweetlist           controllers.DebugController.tweetList
 GET         /debug/getgraph            controllers.DebugController.getGraph
+GET         /debug/deletegraph            controllers.DebugController.deleteGraph
 GET         /favicon.ico               controllers.RootController.favicon
 GET         /:screenName               controllers.RootController.profile(screenName: String)
 GET         /:screenName/follow        controllers.RootController.follow(screenName: String)
