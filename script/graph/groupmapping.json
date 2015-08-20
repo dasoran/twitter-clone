@@ -1,0 +1,40 @@
+{
+  "mappings": {
+    "group": {
+      "_source": {
+        "enabled": true
+      },
+      "_id": {
+        "path": "id"
+      },
+      "properties": {
+        "id": {
+          "type": "long",
+          "index": "not_analyzed"
+        },
+        "users": {
+          "type": "long",
+          "index": "not_analyzed"
+        }
+      }
+    },
+    "uservector": {
+      "_source": {
+        "enabled": true
+      },
+      "_id": {
+        "path": "id"
+      },
+      "properties": {
+        "id": {
+          "type": "long",
+          "index": "not_analyzed"
+        },
+        "to": {
+          "type": "long",
+          "index": "not_analyzed"
+        }
+      }
+    }
+  }
+}

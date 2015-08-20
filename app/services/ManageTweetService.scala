@@ -22,6 +22,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait ManageTweetService {
   def getTweets: Future[List[Tweet]]
 
+  def getTweets(num: Integer): Future[List[Tweet]]
+
   def getTweetsByUserId(userId: Long): Future[List[Tweet]]
 
   def getTweetsByUserIdList(userIdList: List[Long]): Future[List[Tweet]]
@@ -68,20 +70,23 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
       )
     )
 
-  def getTweets: Future[List[Tweet]] =
+  def getTweets: Future[List[Tweet]] = getTweets(2000)
+
+  def getTweets(num: Integer): Future[List[Tweet]] = {
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
       searcher
-        .setSize(200)
+        .setSize(num)
         .addSort("created_at", SortOrder.DESC)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
       .map(_.map(convertStringDateToDate))
       .map(mappingIdToLongInTweets)
+  }
 
   def getTweetsByUserId(userId: Long): Future[List[Tweet]] =
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
       searcher
         .setQuery(termQuery("user_id", userId))
-        .setSize(200)
+        .setSize(2000)
         .addSort("created_at", SortOrder.DESC)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
       .map(_.map(convertStringDateToDate))

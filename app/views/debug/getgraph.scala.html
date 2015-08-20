@@ -1,0 +1,12 @@
+@* このテンプレートの引数 *@
+@(uservecs: List[(Uservector)])
+
+@* main.scala.htmlを呼び出す *@
+@main("ユーザ一覧") {
+  @uservecs.size
+  <br>
+  @uservecs.map {uservec =>
+          @uservec.id, @uservec.to
+    <br>
+  }
+}
