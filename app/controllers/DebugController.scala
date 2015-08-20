@@ -42,7 +42,7 @@ class DebugController @Inject()(
 
   def getGraph = Action.async { implicit rs =>
     manageGroupService.deleteAllGroups.flatMap { f =>
-      manageTweetService.getTweets
+      manageTweetService.getTweets(2000)
         .flatMap { tweets =>
           val pattern = ".*@(\\w+)\\s.*".r
           val replyScreenNames = tweets.map { tweet =>

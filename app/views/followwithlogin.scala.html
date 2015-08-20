@@ -1,9 +1,8 @@
 @* このテンプレートの引数 *@
-@(users: List[models.User])
+@(loginUser: models.User, users: List[models.User])
 
 @* main.scala.htmlを呼び出す *@
 @main("ユーザ一覧") {
-  @users.size
   <div class="container">
     <div class="row">
       <div class="col-md-4"></div>
@@ -16,7 +15,11 @@
                 <div class="follow-username">@user.name</div>
                 <div class="follow-screenname">@@@user.screen_name</div>
               </div>
-              <div class="follow-relation-with-you"><a href="to-remove.html">Following</a></div>
+              @if(user.follower.contains(loginUser.id)) {
+              <div class="follow-relation-with-you"><a href="/@user.screen_name/makeunfollow">Following</a></div>
+                } else {
+              <div class="follow-relation-with-you"><a href="/@user.screen_name/makefollow">No Relationship</a></div>
+                }
               <p class="follow-profile-text">@user.description</p>
             </div>
           </section>
@@ -43,6 +46,7 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
+
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="@routes.Assets.versioned("js/jquery.min.js")"></script>
   <!-- Latest compiled and minified JavaScript -->

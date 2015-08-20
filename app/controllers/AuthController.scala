@@ -39,9 +39,6 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
   )
 
 
-  /**
-   * 一覧表示
-   */
   def signup = Action.async { implicit rs =>
     Future {
       Ok(views.html.signup(signupForm))
@@ -86,9 +83,10 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
           email = Option(form.signupInputEmail1)
         )
 
-        userService.create(newUser)
-        Future {
-          Redirect(routes.RootController.index)
+        userService.create(newUser).flatMap { f =>
+          Future {
+            Redirect(routes.RootController.index)
+          }
         }
       }
     )

@@ -23,6 +23,8 @@ trait ManageUserService {
   def getUsersByUserIdList(userIdList: List[Long]): Future[List[User]]
 
   def insertUser(user: User): Future[Any]
+
+  def updateUser(user: User): Future[Any]
 }
 
 class ManageUserWithElasticsearchService extends ManageUserService with ManageElasticsearch {
@@ -79,7 +81,7 @@ class ManageUserWithElasticsearchService extends ManageUserService with ManageEl
       AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
         searcher.setSize(200)
       }.flatMap { users =>
-        val followList = users.list.map(_.doc).map { targetUser =>
+        val followList = users.list.filter(_.doc.id != 0).map(_.doc).map { targetUser =>
           val toUpdate = targetUser.copy(follower = user.id :: targetUser.follower)
           AsyncESClient.apply(serverUrl).updateAsync(config, toUpdate.id.toString, toUpdate)
           targetUser.id
@@ -89,5 +91,9 @@ class ManageUserWithElasticsearchService extends ManageUserService with ManageEl
         /* 検証用 */
       }
     }
+  }
+
+  def updateUser(user: User): Future[Any] = {
+    AsyncESClient.apply(serverUrl).updateAsync(config, user.id.toString, user)
   }
 }

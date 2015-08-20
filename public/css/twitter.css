@@ -104,7 +104,7 @@
   float: left;
 }
 
-.follow-img > img {
+.follow-img > a > img {
   width: 64px;
   height: 64px;
 }

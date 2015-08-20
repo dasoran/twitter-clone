@@ -3,18 +3,20 @@
 # ~~~~
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file              controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                    controllers.Assets.versioned(path="/public", file: Asset)
 
-GET         /                          controllers.RootController.index
-GET         /welcome                   controllers.RootController.welcome
-GET         /signup                    controllers.AuthController.signup
-GET         /login                     controllers.AuthController.login
-POST        /create                    controllers.AuthController.create
-POST        /authenticate              controllers.AuthController.authenticate
-GET         /debug/userlist            controllers.DebugController.userList
-GET         /debug/tweetlist           controllers.DebugController.tweetList
-GET         /debug/getgraph            controllers.DebugController.getGraph
-GET         /debug/deletegraph            controllers.DebugController.deleteGraph
-GET         /favicon.ico               controllers.RootController.favicon
-GET         /:screenName               controllers.RootController.profile(screenName: String)
-GET         /:screenName/follow        controllers.RootController.follow(screenName: String)
+GET         /                                controllers.RootController.index
+GET         /welcome                         controllers.RootController.welcome
+GET         /signup                          controllers.AuthController.signup
+GET         /login                           controllers.AuthController.login
+POST        /create                          controllers.AuthController.create
+POST        /authenticate                    controllers.AuthController.authenticate
+GET         /debug/userlist                  controllers.DebugController.userList
+GET         /debug/tweetlist                 controllers.DebugController.tweetList
+GET         /debug/getgraph                  controllers.DebugController.getGraph
+GET         /debug/deletegraph               controllers.DebugController.deleteGraph
+GET         /favicon.ico                     controllers.RootController.favicon
+GET         /:screenName                     controllers.RootController.profile(screenName: String)
+GET         /:screenName/follow              controllers.RootController.follow(screenName: String)
+GET         /:screenName/makefollow          controllers.RootController.makeFollow(screenName: String)
+GET         /:screenName/makeunfollow        controllers.RootController.makeUnfollow(screenName: String)

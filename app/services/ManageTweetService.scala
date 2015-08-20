@@ -70,7 +70,7 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
       )
     )
 
-  def getTweets: Future[List[Tweet]] = getTweets(2000)
+  def getTweets: Future[List[Tweet]] = getTweets(1000)
 
   def getTweets(num: Integer): Future[List[Tweet]] = {
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
