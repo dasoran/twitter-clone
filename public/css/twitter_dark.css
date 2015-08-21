@@ -1,6 +1,6 @@
 body {
   color: #1C140D;
-  background-color: #CBE86B;
+  background-color: #343838;
 }
 
 .index-header {
@@ -150,7 +150,7 @@ body {
   height: 100%;
   float: left;
   padding-top: 10px;
-  background-color: #1C140D;
+  background-color: #343838;
 }
 .timeline-menu > .menu-img + .menu-img {
   margin-top: 10px;
@@ -161,7 +161,7 @@ body {
   overflow-y: scroll;
   float: left;
   padding: 10px 10px;
-  background-color: #F2E9E1;
+  background-color: #008C9E;
 }
 .index-main-container  {
   width: calc(100% - 500px - 50px);
@@ -182,14 +182,16 @@ body {
   float: left;
   margin-left: 30px;
   border-radius: 5px 5px 0 0;
-  background-color: #ffffff;
+  background-color: #343838;
 }
 .conversation-index {
   padding: 5px 10px;
-  background-color: #1C140D;
-  color: #F2E9E1;
+  background-color: #00DFFC;
+  color: #343838;
+  font-weight: bold;
 }
 .conversation-members {
+  border: 3px solid #005F6B;
   padding: 2px 5px;
 }
 .conversation-members:after {
@@ -214,8 +216,8 @@ body {
   width: 90%;
   margin: 0 auto;
   padding: 10px;
-  border: 1px solid #F2E9E1;
-  background-color: #FFFFFF;
+  border: 1px solid #005F6B;
+  background-color: #ffffff;
 }
 
 .tweet-main:after {

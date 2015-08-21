@@ -95,6 +95,7 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
   def getTweetsByUserIdList(userIdList: List[Long]): Future[List[Tweet]] =
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
       searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
+        .setSize(1000)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
       .map(_.map(convertStringDateToDate))
       .map(mappingIdToLongInTweets)

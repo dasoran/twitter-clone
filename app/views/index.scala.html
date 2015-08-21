@@ -1,26 +1,47 @@
 @* このテンプレートの引数 *@
+@import java.time.format.DateTimeFormatter
 @(tweetsWithUser: List[(models.Tweet, models.User)])
 
 @* main.scala.htmlを呼び出す *@
 @main("ユーザ一覧") {
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4"></div>
-      <div class="col-md-8">
-        @tweetsWithUser.map { case (tweet, user) =>
-            <section class="timeline-tweet">
-              <div class="tweet-main">
-                <div class="tweet-img"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
-                <p class="tweet-text">@tweet.text</p>
-              </div>
+  <div class="index">
+    <div class="timeline-menu">
+      <div class="menu-img"><a href="#"><img src="assets/img/button_selected_home.png" alt="selected home"></a></div>
+      <div class="menu-img"><a href="#"><img src="assets/img/button_reply.png" alt="reply"></a></div>
+    </div>
+    <div class="timeline">
+      @tweetsWithUser.map { case (tweet, user) =>
+          <section class="timeline-tweet">
+            <div class="tweet-main">
+              <div class="tweet-img"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
               <footer class="tweet-footer">
-                <div class="tweet-screenname">@@@user.screen_name</div>
                 <div class="tweet-username">@user.name</div>
-                <div class="tweet-diffdate">@tweet.created_at</div>
+                <div class="tweet-screenname">@@@user.screen_name</div>
+                <div class="tweet-diffdate">@tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))</div>
               </footer>
-            </section>
-        }
+              <p class="tweet-text">@tweet.text</p>
+            </div>
+          </section>
+      }
+    </div>
+    <div class="index-main-container">
+      <div class="conversation">
+        <div class="conversation-index">no index</div>
+        <div class="conversation-members">
+          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/425285481006239744/kQB13fJs_normal.png" alt="icon"></a></div>
+          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/439784749888843776/8BDgaa_c_normal.png" alt="icon"></a></div>
+          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/544163120168443904/g1uxcM2Y_normal.png" alt="icon"></a></div>
+        </div>
       </div>
+      <div class="conversation">
+        <div class="conversation-index">no index</div>
+        <div class="conversation-members">
+          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/425285481006239744/kQB13fJs_normal.png" alt="icon"></a></div>
+          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/439784749888843776/8BDgaa_c_normal.png" alt="icon"></a></div>
+          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/544163120168443904/g1uxcM2Y_normal.png" alt="icon"></a></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
