@@ -15,10 +15,12 @@ body {
  * Profile
  */
 .profile-header {
-  margin: 10px 0;
+  width: calc(100% - 550px - 60px);
+  margin: 10px 30px;
   padding-top: 30px;
   border-radius: 5px;
   background-color: #eee;
+  float: left;
 }
 
 .profile-floatcontainer:after {
@@ -168,8 +170,7 @@ body {
   height: 100%;
   overflow-y: scroll;
   float: left;
-  padding: 30px;
-  padding-left: 0;
+  margin-top: -10px;
 }
 .index-main-container:after  {
   display: block;
@@ -183,7 +184,7 @@ body {
   margin-top: 20px;
   margin-left: 30px;
   border-radius: 5px 5px 0 0;
-  background-color: #ffffff;
+  border: 1px solid #1C140D;
 }
 .conversation-index {
   padding: 5px 10px;
@@ -192,7 +193,7 @@ body {
 }
 .conversation-members {
   padding: 2px 5px;
-  border-bottom: 2px solid #1C140D;
+  background-color: #F2E9E1;
 }
 .conversation-members:after {
   display: block;
@@ -207,6 +208,62 @@ body {
 .conversation-member > a > img {
   width: 24px;
   height: 24px;
+}
+
+/*
+ * One Tweet in Timeline on conversation preview
+ */
+.conversation-preview {
+  margin: 0 auto;
+  background-color: #CBE86B;
+  font-size: 0.5em;
+}
+
+.conversation-preview-tweet-main {
+  padding: 5px;
+}
+
+.conversation-preview-tweet-main:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+.conversation-preview-tweet-img {
+  float: left;
+}
+
+.conversation-preview-tweet-img > a > img {
+  width: 25px;
+  height: 25px;
+}
+
+.conversation-preview-tweet-text {
+  width: calc(100% - 25px - 10px);
+  float: left;
+  margin: 0;
+  margin-left: 5px;
+}
+
+.conversation-preview-tweet-footer {
+  width: calc(100% - 25px - 10px);
+  margin-left: 5px;
+  float: left;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.conversation-preview-tweet-footer > div + div {
+  margin-left: 10px;
+}
+
+.conversation-preview-tweet-screenname {
+  font-size: 0.8em;
+  margin-top: 2px;
+}
+
+.conversation-preview-tweet-username {
+  font-weight: bold;
 }
 
 /*
@@ -273,61 +330,6 @@ body {
   float: right;
   font-size: 0.8em;
   margin-top: 2px;
-}
-/*
- * One Tweet in Timeline on conversation preview
- */
-.conversation-preview {
-  margin: 0 auto;
-  background-color: #FFFFFF;
-  font-size: 0.5em;
-}
-
-.conversation-preview-tweet-main {
-  padding: 5px;
-}
-
-.conversation-preview-tweet-main:after {
-  display: block;
-  clear: both;
-  content: "";
-}
-
-.conversation-preview-tweet-img {
-  float: left;
-}
-
-.conversation-preview-tweet-img > a > img {
-  width: 25px;
-  height: 25px;
-}
-
-.conversation-preview-tweet-text {
-  width: calc(100% - 25px - 10px);
-  float: left;
-  margin: 0;
-  margin-left: 5px;
-}
-
-.conversation-preview-tweet-footer {
-  width: calc(100% - 25px - 10px);
-  margin-left: 5px;
-  float: left;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.conversation-preview-tweet-footer > div + div {
-  margin-left: 10px;
-}
-
-.conversation-preview-tweet-screenname {
-  font-size: 0.8em;
-  margin-top: 2px;
-}
-
-.conversation-preview-tweet-username {
-  font-weight: bold;
 }
 
 

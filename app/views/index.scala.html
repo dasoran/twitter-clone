@@ -3,7 +3,7 @@
 @(tweetsWithUser: List[(models.Tweet, models.User)], groups: List[(Long, List[User], List[(models.Tweet, models.User)])])
 
 @* main.scala.htmlを呼び出す *@
-@main("ユーザ一覧") {
+@main("Home") {
   <div class="index">
     <div class="timeline-menu">
       <div class="menu-img"><a href="#"><img src="assets/img/button_selected_home.png" alt="selected home"></a></div>
@@ -11,20 +11,20 @@
     </div>
     <div class="timeline">
       @tweetsWithUser.map { case (tweet, user) =>
-          <section class="timeline-tweet">
-            <div class="tweet-main">
-              <div class="tweet-img"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
-              <footer class="tweet-footer">
-                <div class="tweet-username">@user.name</div>
-                <div class="tweet-screenname">@@@user.screen_name</div>
-                <div class="tweet-diffdate">@tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))</div>
-              </footer>
-              <p class="tweet-text">@tweet.text</p>
-            </div>
-          </section>
+        <section class="timeline-tweet">
+          <div class="tweet-main">
+            <div class="tweet-img"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
+            <footer class="tweet-footer">
+              <div class="tweet-username">@user.name</div>
+              <div class="tweet-screenname">@@@user.screen_name</div>
+              <div class="tweet-diffdate">@tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))</div>
+            </footer>
+            <p class="tweet-text">@tweet.text</p>
+          </div>
+        </section>
       }
     </div>
-    <div class="index-main-container">
+    <div class="index-main-container"> @* TODO inline-blockを検討 *@
       @groups.map { case (id, users, tweetsWithUser) =>
         <div class="conversation">
           <div class="conversation-index">no index</div>

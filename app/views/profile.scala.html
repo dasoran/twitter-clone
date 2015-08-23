@@ -1,9 +1,27 @@
 @* このテンプレートの引数 *@
+@import java.time.format.DateTimeFormatter
 @(user: models.User, tweetsWithUser: List[(models.Tweet, models.User)])
 
 @* main.scala.htmlを呼び出す *@
-@main("ユーザ一覧") {
-  <div class="container">
+@main(user.name + "'s profile") {
+  <div class="index">
+    <div class="timeline-menu">
+    </div>
+    <div class="timeline">
+      @tweetsWithUser.map { case (tweet, user) =>
+        <section class="timeline-tweet">
+          <div class="tweet-main">
+            <div class="tweet-img"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
+            <footer class="tweet-footer">
+              <div class="tweet-username">@user.name</div>
+              <div class="tweet-screenname">@@@user.screen_name</div>
+              <div class="tweet-diffdate">@tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss"))</div>
+            </footer>
+            <p class="tweet-text">@tweet.text</p>
+          </div>
+        </section>
+      }
+    </div>
     <header class="profile-header">
       <div class="profile-floatcontainer">
         <div class="profile-icon"><img src="/assets/@user.profile_image_url" alt="icon"></div>
@@ -18,24 +36,6 @@
         <a href="/@user.screen_name/follower"><div class="profile-follower">Follower @user.follower.size</div></a>
       </div>
     </header>
-    <div class="row">
-      <div class="col-md-4"></div>
-      <div class="col-md-8">
-        @tweetsWithUser.map { case (tweet, user) =>
-          <section class="timeline-tweet">
-            <div class="tweet-main">
-              <div class="tweet-img"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
-              <p class="tweet-text">@tweet.text</p>
-            </div>
-            <footer class="tweet-footer">
-              <div class="tweet-screenname">@@@user.screen_name</div>
-              <div class="tweet-username">@user.name</div>
-              <div class="tweet-diffdate">@tweet.created_at</div>
-            </footer>
-          </section>
-        }
-      </div>
-    </div>
   </div>
   <div class="modal fade" id="tweetModal">
     <div class="modal-dialog">
