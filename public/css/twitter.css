@@ -178,18 +178,21 @@ body {
   content: "";
 }
 .conversation {
+  display: inline-block;
+  vertical-align: top;
   width: 200px;
   overflow: hidden;
-  float: left;
+  /*float: left;*/
   margin-top: 20px;
   margin-left: 30px;
   border-radius: 5px 5px 0 0;
-  border: 1px solid #1C140D;
+  border: 2px solid #F2E9E1;
 }
 .conversation-index {
   padding: 5px 10px;
-  background-color: #1C140D;
-  color: #F2E9E1;
+  /*background-color: #1C140D;*/
+  background-color: #F2E9E1;
+  color: #1C140D;
 }
 .conversation-members {
   padding: 2px 5px;
@@ -221,6 +224,7 @@ body {
 
 .conversation-preview-tweet-main {
   padding: 5px;
+  border: 1px solid #F2E9E1;
 }
 
 .conversation-preview-tweet-main:after {
