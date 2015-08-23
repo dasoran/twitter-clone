@@ -27,6 +27,8 @@ trait ManageTweetService {
   def getTweetsByUserId(userId: Long): Future[List[Tweet]]
 
   def getTweetsByUserIdList(userIdList: List[Long]): Future[List[Tweet]]
+
+  def getTweetsByUserIdList(userIdList: List[Long], num: Integer): Future[List[Tweet]]
 }
 
 class ManageTweetWithElasticsearchService extends ManageTweetService with ManageElasticsearch {
@@ -93,9 +95,12 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
       .map(mappingIdToLongInTweets)
 
   def getTweetsByUserIdList(userIdList: List[Long]): Future[List[Tweet]] =
+    getTweetsByUserIdList(userIdList, 1000)
+
+  def getTweetsByUserIdList(userIdList: List[Long], num: Integer): Future[List[Tweet]] =
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
       searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
-        .setSize(1000)
+        .setSize(num)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
       .map(_.map(convertStringDateToDate))
       .map(mappingIdToLongInTweets)

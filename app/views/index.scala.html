@@ -1,6 +1,6 @@
 @* このテンプレートの引数 *@
 @import java.time.format.DateTimeFormatter
-@(tweetsWithUser: List[(models.Tweet, models.User)])
+@(tweetsWithUser: List[(models.Tweet, models.User)], groups: List[(Long, List[User], List[(models.Tweet, models.User)])])
 
 @* main.scala.htmlを呼び出す *@
 @main("ユーザ一覧") {
@@ -25,23 +25,28 @@
       }
     </div>
     <div class="index-main-container">
-      <div class="conversation">
-        <div class="conversation-index">no index</div>
-        <div class="conversation-members">
-          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/425285481006239744/kQB13fJs_normal.png" alt="icon"></a></div>
-          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/439784749888843776/8BDgaa_c_normal.png" alt="icon"></a></div>
-          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/544163120168443904/g1uxcM2Y_normal.png" alt="icon"></a></div>
+      @groups.map { case (id, users, tweetsWithUser) =>
+        <div class="conversation">
+          <div class="conversation-index">no index</div>
+          <div class="conversation-members">
+            @users.map { user =>
+              <div class="conversation-member"><a href="#/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
+            }
+          </div>
+          <div class="conversation-preview">
+            @tweetsWithUser.map { case (tweet, user) =>
+              <div class="conversation-preview-tweet-main">
+                <div class="conversation-preview-tweet-img"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
+                <footer class="conversation-preview-tweet-footer">
+                  <span class="conversation-preview-tweet-username">/@user.name</span>
+                  <span class="conversation-preview-tweet-screenname">@@@user.screen_name</span>
+                </footer>
+                <p class="conversation-preview-tweet-text">@tweet.text</p>
+              </div>
+            }
+          </div>
         </div>
-      </div>
-      <div class="conversation">
-        <div class="conversation-index">no index</div>
-        <div class="conversation-members">
-          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/425285481006239744/kQB13fJs_normal.png" alt="icon"></a></div>
-          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/439784749888843776/8BDgaa_c_normal.png" alt="icon"></a></div>
-          <div class="conversation-member"><a href="#"><img src="assets/img/profile_images/544163120168443904/g1uxcM2Y_normal.png" alt="icon"></a></div>
-        </div>
-      </div>
-
+      }
     </div>
   </div>
 

@@ -1,15 +1,14 @@
 package controllers
 
 import jp.t2v.lab.play2.auth.{OptionalAuthElement, AuthElement}
-import models.NormalUser
+import models._
 import play.api.mvc.Results._
 import play.api.mvc._
 import play.api.i18n.{MessagesApi, I18nSupport}
 
 
-
 import javax.inject.Inject
-import services.{UserService, ManageTweetService, ManageUserService}
+import services.{GraphService, UserService, ManageTweetService, ManageUserService}
 
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -18,7 +17,8 @@ class RootController @Inject()(
                                 val messagesApi: MessagesApi,
                                 val manageUserService: ManageUserService,
                                 val manageTweetService: ManageTweetService,
-                                val userService: UserService) extends Controller
+                                val userService: UserService,
+                                val graphService: GraphService) extends Controller
 with I18nSupport with OptionalAuthElement with AuthConfigImpl {
 
 
@@ -26,13 +26,31 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
     loggedIn match {
       case Some(user) => {
         manageTweetService.getTweetsByUserIdList(user.follow).flatMap { tweets =>
-          manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
+          manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).flatMap { users =>
             val tweetsWithUser = tweets.map { tweet =>
               (tweet, users.find(user => user.id == tweet.user_id))
             }.filter { case (tweet, user) => user.isDefined }
               .map { case (tweet, user) => (tweet, user.get) }
 
-            Ok(views.html.index(tweetsWithUser))
+            graphService.createGraph.flatMap { case (uservecs, groups) =>
+              val futures: List[Future[(Long, List[User], List[(Tweet, User)])]] =
+                groups.filter(_.users.size > 1).map { group =>
+                  manageTweetService.getTweetsByUserIdList(group.users.toList, 5).flatMap { tweets =>
+                    manageUserService.getUsersByUserIdList(group.users.toList).map { users =>
+                      (group.id, users, tweets.map { tweet =>
+                        (tweet, users.find(user => user.id == tweet.user_id))
+                      }.filter { case (tweet, user) => user.isDefined }
+                        .map { case (tweet, user) => (tweet, user.get) })
+                    }
+                  }
+                }
+
+              Future.fold(futures)(List(): List[(Long, List[User], List[(Tweet, User)])]) { (tweets, tweet) => tweet :: tweets }
+                .map { tweetsOnGroup =>
+                  Ok(views.html.index(tweetsWithUser, tweetsOnGroup))
+                }
+            }
+
           }
         }
       }
@@ -84,11 +102,11 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
     }
   }
 
-  def makeFollow(screenName: String) = AsyncStack{ implicit rs =>
+  def makeFollow(screenName: String) = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) => {
         manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-          userService.makeFollow(user, userOption.get).map{ user =>
+          userService.makeFollow(user, userOption.get).map { user =>
             Redirect(routes.RootController.profile(screenName))
           }
         }
@@ -97,11 +115,11 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
     }
   }
 
-  def makeUnfollow(screenName: String) = AsyncStack{ implicit rs =>
+  def makeUnfollow(screenName: String) = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) => {
         manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-          userService.makeUnfollow(user, userOption.get).map{ user =>
+          userService.makeUnfollow(user, userOption.get).map { user =>
             Redirect(routes.RootController.profile(screenName))
           }
         }
