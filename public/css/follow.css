@@ -1,0 +1,44 @@
+
+/*
+ * One Follow in Follow List
+ */
+.follow-item {
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #eef;
+}
+
+.follow-item:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+.follow-img {
+  float: left;
+}
+
+.follow-img > a > img {
+  width: 64px;
+  height: 64px;
+}
+
+.follow-main {
+  width: calc(100% - 64px - 40px);
+  margin-left: 20px;
+  float: left;
+}
+
+.follow-namecontainer {
+  vertical-align:bottom;
+}
+
+.follow-namecontainer > div {
+  display: inline;
+}
+
+.follow-username {
+  font-size: 1.5em;
+}
+

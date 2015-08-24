@@ -1,0 +1,82 @@
+/*
+ * Profile
+ */
+.profile-header {
+  width: calc(100% - 550px - 60px);
+  margin: 10px 30px;
+  padding-top: 30px;
+  border-radius: 5px;
+  background-color: #F2E9E1;
+  float: left;
+}
+
+.profile-floatcontainer:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+
+.profile-icon {
+  margin-left: 30px;
+  float: left;
+}
+
+.profile-icon > img {
+  width: 128px;
+  height: 128px;
+}
+
+.profile-main {
+  width: calc(100% - 128px - 100px);
+  margin-left: 30px;
+  float: left;
+}
+
+.profile-username {
+  margin-top: 0;
+  font-size: 2em;
+}
+
+.profile-relation-with-you {
+  margin-top: 20px;
+}
+
+.profile-relation {
+  width: 100%;
+  margin-top: 30px;
+  color: #fff;
+  text-align: center;
+}
+
+.profile-relation > a:link { color: #fff; }
+.profile-relation > a:visited { color: #fff; }
+.profile-relation > a:hover { color: #fff; }
+.profile-relation > a:active { color: #fff; }
+
+.profile-relation:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+
+.profile-follow {
+  width: 50%;
+  padding: 30px 0;
+  background-color: #aaf;
+  font-size: 2em;
+  border-radius: 0 0 0 5px;
+  float: left;
+}
+
+.profile-follower {
+  width: 50%;
+  padding: 30px 0;
+  background-color: #faa;
+  font-size: 2em;
+  border-radius: 0 0 5px 0;
+  float: left;
+}
+
+

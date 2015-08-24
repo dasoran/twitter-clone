@@ -24,13 +24,13 @@
         </section>
       }
     </div>
-    <div class="index-main-container"> @* TODO inline-blockを検討 *@
+    <div class="index-main-container">
       @groups.map { case (id, users, tweetsWithUser) =>
         <div class="conversation">
           <div class="conversation-index">no index</div>
           <div class="conversation-members">
             @users.map { user =>
-              <div class="conversation-member"><a href="#/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
+              <div class="conversation-member"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
             }
           </div>
           <div class="conversation-preview">

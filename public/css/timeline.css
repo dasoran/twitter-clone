@@ -1,0 +1,78 @@
+.timeline {
+  width: 500px;
+  height: 100%;
+  overflow-y: scroll;
+  float: left;
+  padding: 10px 10px;
+  background-color: #F2E9E1;
+}
+
+/*
+ * One Tweet in Timeline
+ */
+.timeline-tweet {
+  width: 90%;
+  margin: 0 auto;
+  padding: 10px;
+  border: 1px solid #F2E9E1;
+  background-color: #FFFFFF;
+}
+
+.tweet-main:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+.tweet-img {
+  float: left;
+}
+
+.tweet-img > a > img {
+  width: 45px;
+  height: 45px;
+}
+
+.tweet-text {
+  width: calc(100% - 45px - 20px);
+  float: left;
+  margin: 0;
+  margin-left: 10px;
+}
+
+.tweet-footer {
+  width: calc(100% - 45px - 20px);
+  margin-left: 10px;
+  float: left;
+}
+
+.tweet-footer:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+.tweet-footer > div + div {
+  margin-left: 10px;
+}
+
+.tweet-screenname {
+  float: left;
+  font-size: 0.8em;
+  margin-top: 2px;
+}
+
+.tweet-username {
+  float: left;
+  font-weight: bold;
+}
+
+.tweet-diffdate {
+  float: right;
+  font-size: 0.8em;
+  margin-top: 2px;
+}
+
+
+
+
