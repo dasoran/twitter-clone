@@ -20,17 +20,23 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 @ImplementedBy(classOf[ManageTweetWithElasticsearchService])
 trait ManageTweetService {
+  def getTweetById(id: Long): Future[Option[Tweet]]
+
   def getTweets: Future[List[Tweet]]
 
-  def getTweets(num: Integer): Future[List[Tweet]]
+  def getTweets(num: Int): Future[List[Tweet]]
 
   def getTweetsByUserId(userId: Long): Future[List[Tweet]]
 
   def getTweetsByUserIdList(userIdList: List[Long]): Future[List[Tweet]]
 
-  def getTweetsByUserIdList(userIdList: List[Long], num: Integer): Future[List[Tweet]]
+  def getTweetsByUserIdList(userIdList: List[Long], num: Int): Future[List[Tweet]]
 
-  def getReplyTweetsByUserIdList(userIdList: List[Long], screenName: String, num: Integer): Future[List[Tweet]]
+  def getReplyTweetsByUserIdList(userIdList: List[Long], screenName: String, num: Int): Future[List[Tweet]]
+
+  def getTweetsByUserIdListToTheTweet(userIdList: List[Long], num: Int, lastId: Long): Future[List[Tweet]]
+
+  def getReplyTweetsByUserIdListToTheTweet(userIdList: List[Long], screenName: String, num: Int, lastId: Long): Future[List[Tweet]]
 
 }
 
@@ -70,14 +76,25 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
 
   def mappingIdToLongInTweets(tweets: List[Tweet]) =
     tweets.map(tweet => tweet.copy(
+      id = toLong(tweet.id),
+      user_id = toLong(tweet.user_id)
+    )
+    )
+
+  def getTweetById(id: Long): Future[Option[Tweet]] = {
+    AsyncESClient.apply(serverUrl).findAsync[TweetDB](config){ searcher =>
+      searcher.setQuery(termQuery("_id", id))
+    }.map(_.map(_._2))
+      .map(_.map(convertStringDateToDate))
+      .map(_.map(tweet => tweet.copy(
         id = toLong(tweet.id),
         user_id = toLong(tweet.user_id)
-      )
-    )
+      )))
+  }
 
   def getTweets: Future[List[Tweet]] = getTweets(1000)
 
-  def getTweets(num: Integer): Future[List[Tweet]] = {
+  def getTweets(num: Int): Future[List[Tweet]] = {
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
       searcher
         .setSize(num)
@@ -100,7 +117,7 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
   def getTweetsByUserIdList(userIdList: List[Long]): Future[List[Tweet]] =
     getTweetsByUserIdList(userIdList, 1000)
 
-  def getTweetsByUserIdList(userIdList: List[Long], num: Integer): Future[List[Tweet]] =
+  def getTweetsByUserIdList(userIdList: List[Long], num: Int): Future[List[Tweet]] =
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
       searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
         .setSize(num)
@@ -110,13 +127,54 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
       .map(mappingIdToLongInTweets)
 
 
-  def getReplyTweetsByUserIdList(userIdList: List[Long], screenName: String, num: Integer): Future[List[Tweet]] =
+  def getReplyTweetsByUserIdList(userIdList: List[Long], screenName: String, num: Int): Future[List[Tweet]] = {
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
       searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
-      .setQuery(termQuery("text", "@" + screenName))
+        .setQuery(matchQuery("text", "@" + screenName))
         .setSize(num)
         .addSort("created_at", SortOrder.DESC)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
       .map(_.map(convertStringDateToDate))
       .map(mappingIdToLongInTweets)
+    }
+
+  def getTweetsByUserIdListToTheTweet(userIdList: List[Long], num: Int, lastId: Long): Future[List[Tweet]] =
+    AsyncESClient.apply(serverUrl).findAsync[TweetDB](config){ searcher =>
+      searcher.setQuery(termQuery("_id", lastId))
+    }.map(_.map(_._2))
+      .map(_.map(tweet => tweet.copy(
+        id = toLong(tweet.id),
+        user_id = toLong(tweet.user_id)
+      )))
+      .flatMap { lastTweet =>
+        AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
+      searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
+        .setSize(num)
+        .addSort("created_at", SortOrder.DESC)
+        .setQuery(rangeQuery("created_at").lt(lastTweet.get.created_at))
+    }.map(_.list.filter(_.doc.id != 0).map(_.doc))
+          .map(_.map(convertStringDateToDate))
+          .map(mappingIdToLongInTweets)
+      }
+
+
+  def getReplyTweetsByUserIdListToTheTweet(userIdList: List[Long], screenName: String, num: Int, lastId: Long): Future[List[Tweet]] =
+    AsyncESClient.apply(serverUrl).findAsync[TweetDB](config){ searcher =>
+      searcher.setQuery(termQuery("_id", lastId))
+    }.map(_.map(_._2))
+      .map(_.map(tweet => tweet.copy(
+        id = toLong(tweet.id),
+        user_id = toLong(tweet.user_id)
+      )))
+      .flatMap { lastTweet =>
+        AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
+      searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
+        .setQuery(matchQuery("text", "@" + screenName))
+        .setSize(num)
+        .addSort("created_at", SortOrder.DESC)
+        .setQuery(rangeQuery("created_at").lt(lastTweet.get.created_at))
+    }.map(_.list.filter(_.doc.id != 0).map(_.doc))
+          .map(_.map(convertStringDateToDate))
+          .map(mappingIdToLongInTweets)
+      }
 }

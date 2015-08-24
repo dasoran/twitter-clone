@@ -36,6 +36,36 @@ with OptionalAuthElement with AuthConfigImpl {
                           retweet_count: Int,
                           favorite_count: Int)
 
+  def timelineUpdate(lastId: Long) = AsyncStack { implicit rs =>
+    loggedIn match {
+      case Some(user) => {
+          manageTweetService.getTweetsByUserIdListToTheTweet(user.follow, 20, lastId).flatMap { tweets =>
+            manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
+
+              val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
+                TweetForJson(tweet.id,
+                  tweet.user_id,
+                  tweet.text,
+                  tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                  tweet.retweet_count,
+                  tweet.favorite_count)
+              }.map { tweet =>
+                (tweet, users.find(user => user.id == tweet.user_id))
+              }.filter { case (tweet, user) => user.isDefined }
+                .map { case (tweet, user) => TweetWithUser(tweet, user.get) }
+
+              implicit val tweetWrites = Json.writes[TweetForJson]
+              implicit val userWrites = Json.writes[models.User]
+              implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
+
+              Ok(Json.toJson(tweetsWithUser))
+            }
+          }
+        }
+      case None => Future.successful(Redirect(routes.RootController.welcome))
+    }
+  }
+
   def timeline = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) => {
@@ -66,10 +96,40 @@ with OptionalAuthElement with AuthConfigImpl {
     }
   }
 
+  def replyUpdate(lastId: Long) = AsyncStack { implicit rs =>
+    loggedIn match {
+      case Some(user) =>
+        manageTweetService.getReplyTweetsByUserIdListToTheTweet(user.follow, user.screen_name, 20, lastId).flatMap { tweets =>
+          manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
+
+            val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
+              TweetForJson(tweet.id,
+                tweet.user_id,
+                tweet.text,
+                tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                tweet.retweet_count,
+                tweet.favorite_count)
+            }.map { tweet =>
+              (tweet, users.find(user => user.id == tweet.user_id))
+            }.filter { case (tweet, user) => user.isDefined }
+              .map { case (tweet, user) => TweetWithUser(tweet, user.get) }
+
+            implicit val tweetWrites = Json.writes[TweetForJson]
+            implicit val userWrites = Json.writes[models.User]
+            implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
+
+            Ok(Json.toJson(tweetsWithUser))
+          }
+        }
+      case None => Future.successful(Redirect(routes.RootController.welcome))
+    }
+  }
+
   def reply = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) => {
         manageTweetService.getReplyTweetsByUserIdList(user.follow, user.screen_name, 20).flatMap { tweets =>
+          println(tweets)
           manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
 
             val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>

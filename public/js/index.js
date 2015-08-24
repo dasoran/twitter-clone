@@ -10,7 +10,9 @@ $('#home').click(function () {
     setTimeout(function() {
       getTimelineJSON(function(data) {
         deleteTimeline();
-        createTimeline(data);
+        createTimeline(data, function (event, lastId) {
+          console.log(lastId);
+        });
       });
     }, 500);
   }
@@ -86,10 +88,14 @@ var createLoader = function () {
     );
 }
 
-var getTimelineJSON = function (callback) {
+var getTimelineJSON = function (callback, lastId) {
+  var url = '/api/timeline';
+  if (lastId != undefined) {
+    url = url + '/' + lastId;
+  }
   $.ajax({
     typw: 'GET',
-    url: '/api/timeline',
+    url: url, 
     dataType: 'json',
     success: function(data) {
       callback(data);
@@ -97,10 +103,14 @@ var getTimelineJSON = function (callback) {
   });
 };
 
-var getReplyJSON = function (callback) {
+var getReplyJSON = function (callback, lastId) {
+  var url = '/api/reply';
+  if (lastId != undefined) {
+    url = url + '/' + lastId;
+  }
   $.ajax({
     typw: 'GET',
-    url: '/api/reply',
+    url: url, 
     dataType: 'json',
     success: function(data) {
       callback(data);
@@ -109,19 +119,38 @@ var getReplyJSON = function (callback) {
 };
 
 
-var createTimeline = function (data) {
+var createTimeline = function (data, callback) {
   for (var i = 0; i < data.length; i++) {
     var domTweet = createTweet(data[i].tweet, data[i].user)
     $('#timeline').append(domTweet);
   }
+  var clickFunction = function(lastId) {
+    return function(event) {
+      $($('#timeline > section')[$('#timeline > section').length - 1]).remove()
+      callback(event, lastId)
+    };
+  }(data[data.length - 1].tweet.id);
+
+  $('#timeline').append(
+    $('<section></section>', {addClass: 'timeline-tweet'})
+    .append(
+      $('<div></div>', {addClass: 'tweet-main', on:{click: clickFunction}})
+      .text('↓')
+    )
+  );
 }
 
 var deleteTimeline = function () {
   $('#timeline').html('');
 }
 
-getTimelineJSON(function(data) {
-  createTimeline(data);
-});
+var loadTimeline = function (lastId) {
+  getTimelineJSON(function(data, lastId) {
+    createTimeline(data, function (event, lastId) {
+      loadTimeline(lastId);
+    });
+  }, lastId);
+};
 
+loadTimeline();
 
