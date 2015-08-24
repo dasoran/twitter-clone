@@ -35,3 +35,9 @@ body {
   margin-top: 10px;
 }
 
+.loading {
+  width: 80px;
+  height: 80px;
+  margin: 100px auto;
+}
+

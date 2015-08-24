@@ -11,6 +11,8 @@ GET         /signup                          controllers.AuthController.signup
 GET         /login                           controllers.AuthController.login
 POST        /create                          controllers.AuthController.create
 POST        /authenticate                    controllers.AuthController.authenticate
+GET         /api/timeline                    controllers.ApiController.timeline
+GET         /api/reply                       controllers.ApiController.reply
 GET         /debug/userlist                  controllers.DebugController.userList
 GET         /debug/tweetlist                 controllers.DebugController.tweetList
 GET         /debug/getgraph                  controllers.DebugController.getGraph
