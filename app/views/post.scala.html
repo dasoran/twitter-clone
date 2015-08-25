@@ -2,7 +2,7 @@
   <div class="modal fade" id="tweetModal">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form action="/api/tweet" method="post">
+        <form action="/api/tweet" method="post" id="tweetForm">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <h4 class="modal-title">Tweet</h4>
@@ -19,13 +19,40 @@
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
   <script>
+    $('#tweetForm').submit(function(event) {
+      event.preventDefault();
+      var f = $(this);
+      $.ajax({
+        type: 'POST',
+        url: f.prop('action'),
+        dataType: 'json',
+        data: f.serialize(),
+        success: function(data) {
+          console.log('reload');
+        }
+      });
+    });
+ 
+    var isShown = false;
     $('body').keypress(function() {
       if (event.which == 110) {
         $('#tweetModal').modal();
       }
+      if (isShown) {
+        if (event.ctrlKey) {
+          if (event.which == 13) {
+            $('#tweetForm').submit();
+          }
+        }
+      }
     });
+
     $('#tweetModal').on('shown.bs.modal', function () {
+      isShown = true;
       $('#tweetInput').focus();
+    });
+    $('#tweetModal').on('hidden.bs.modal', function () {
+      isShown = false;
     });
   </script>
 

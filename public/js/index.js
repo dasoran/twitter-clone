@@ -83,7 +83,10 @@ var createTweet = function(tweet, user) {
         .append(
           $('<div></div>', {addClass: 'tweet-actions'})
             .append(
-              $('<i></i>', {addClass: 'fa fa-reply'})
+              $('<i></i>', {addClass: 'fa fa-reply', on: {click: function(event) {
+                $('#tweetInput').val('@' + user.screen_name + " ");
+                $('#tweetModal').modal();
+              }}})
             )
             .append(
               $('<i></i>', {addClass: 'fa fa-star'})
