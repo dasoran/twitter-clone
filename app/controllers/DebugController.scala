@@ -12,6 +12,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.util.Random
 
+
 class DebugController @Inject()(val messagesApi: MessagesApi,
                                 val manageUserService: ManageUserService,
                                 val manageTweetService: ManageTweetService,
@@ -34,6 +35,7 @@ class DebugController @Inject()(val messagesApi: MessagesApi,
   }
 
   def userList = Action.async { implicit rs =>
+
     manageUserService.getUsers
       .map { users =>
         Ok(views.html.debug.userlist(users))

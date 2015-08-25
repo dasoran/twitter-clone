@@ -13,7 +13,7 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{WebSocket, Controller}
-import services.{GraphService, UserService, ManageTweetService, ManageUserService}
+import services._
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -30,7 +30,8 @@ class ApiController @Inject()(
                                val manageUserService: ManageUserService,
                                val manageTweetService: ManageTweetService,
                                val userService: UserService,
-                               val graphService: GraphService) extends Controller
+                               val graphService: GraphService,
+                               val manageGroupService: ManageGroupService) extends Controller
 with I18nSupport with OptionalAuthElement with AuthConfigImpl {
 
   case class TweetWithUser(tweet: TweetForJson,
@@ -94,6 +95,69 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
 
             Ok(Json.toJson(tweetsWithUser))
+          }
+        }
+      }
+      case None => Future.successful(Redirect(routes.RootController.welcome))
+    }
+  }
+
+
+  def groupTimelineUpdate(groupId: Long, lastId: Long) = AsyncStack { implicit rs =>
+    loggedIn match {
+      case Some(user) => {
+        manageGroupService.getGroupById(groupId).flatMap{ group =>
+          manageTweetService.getTweetsByUserIdListToTheTweet(group.get.users.toList, 20, lastId).flatMap { tweets =>
+            manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
+
+              val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
+                TweetForJson(tweet.id,
+                  tweet.user_id,
+                  tweet.text,
+                  tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                  tweet.favorited_user_id)
+              }.map { tweet =>
+                (tweet, users.find(user => user.id == tweet.user_id))
+              }.filter { case (tweet, user) => user.isDefined }
+                .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
+
+              implicit val tweetWrites = Json.writes[TweetForJson]
+              implicit val userWrites = Json.writes[models.User]
+              implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
+
+              Ok(Json.toJson(tweetsWithUser))
+            }
+          }
+        }
+      }
+      case None => Future.successful(Redirect(routes.RootController.welcome))
+    }
+  }
+
+  def groupTimeline(groupId: Long) = AsyncStack { implicit rs =>
+    loggedIn match {
+      case Some(user) => {
+        manageGroupService.getGroupById(groupId).flatMap{ group =>
+          manageTweetService.getTweetsByUserIdList(group.get.users.toList, 20).flatMap { tweets =>
+            manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
+
+              val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
+                TweetForJson(tweet.id,
+                  tweet.user_id,
+                  tweet.text,
+                  tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
+                  tweet.favorited_user_id)
+              }.map { tweet =>
+                (tweet, users.find(user => user.id == tweet.user_id))
+              }.filter { case (tweet, user) => user.isDefined }
+                .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
+
+              implicit val tweetWrites = Json.writes[TweetForJson]
+              implicit val userWrites = Json.writes[models.User]
+              implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
+
+              Ok(Json.toJson(tweetsWithUser))
+            }
           }
         }
       }

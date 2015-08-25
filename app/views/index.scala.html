@@ -1,6 +1,6 @@
 @* このテンプレートの引数 *@
 @import java.time.format.DateTimeFormatter
-@(tweetsWithUser: List[(models.Tweet, models.User)], groups: List[(Long, List[User], List[(models.Tweet, models.User)])])
+@(tweetsWithUser: List[(models.Tweet, models.User)], groups: List[(Long, List[String], List[User], List[(models.Tweet, models.User)])])
 
 @* main.scala.htmlを呼び出す *@
 @main("Home") {
@@ -12,9 +12,9 @@
     <div class="timeline" id="timeline">
     </div>
     <div class="index-main-container">
-      @groups.map { case (id, users, tweetsWithUser) =>
+      @groups.map { case (id, indexes, users, tweetsWithUser) =>
         <div class="conversation">
-          <div class="conversation-index">no index</div>
+          <div class="conversation-index" id="group-@id">@indexes.mkString(", ")</div>
           <div class="conversation-members">
             @users.map { user =>
               <div class="conversation-member"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>

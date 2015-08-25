@@ -18,6 +18,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 @ImplementedBy(classOf[ManageGroupWithElasticsearchService])
 trait ManageGroupService {
 
+  def getGroupById(groupId: Long): Future[Option[Group]]
+
   def insertGroup(group: Group): Future[Any]
 
   def deleteGroup(groupId: Long): Future[Any]
@@ -30,6 +32,15 @@ trait ManageGroupService {
 class ManageGroupWithElasticsearchService extends ManageGroupService with ManageElasticsearch {
 
   def config = ESConfig("nekomimi", "group")
+
+  def getGroupById(groupId: Long): Future[Option[Group]] = {
+    AsyncESClient.apply(serverUrl).findAsync[Group](config){ searcher =>
+      searcher.setQuery(termQuery("_id", groupId))
+    }.map(_.map{ rawGroup =>
+      val group = rawGroup._2
+      group.copy(users = group.users.map(toLong))
+    })
+  }
 
   def insertGroup(group: Group): Future[Any] = {
     AsyncESClient.apply(serverUrl).insertAsync(config, group)

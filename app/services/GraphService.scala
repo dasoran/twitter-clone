@@ -10,6 +10,10 @@ import scala.util.Random
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
+
+import org.atilika.kuromoji.Tokenizer
+import org.atilika.kuromoji.Token
+
 /**
  * Created by dasoran on 2015/08/22.
  */
@@ -17,6 +21,91 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
                              val manageTweetService: ManageTweetService,
                              val manageUservectorService: ManageUservectorService,
                              val manageGroupService: ManageGroupService) {
+
+  def createIndex(group: Group): Future[List[String]] = {
+    val tokenizer = Tokenizer.builder.mode(Tokenizer.Mode.NORMAL).build
+
+
+    manageTweetService.getTweetsByUserIdList(group.users.toList, 100).map { tweets =>
+      val pattern = "([a-zA-Z]+)".r
+      val wordMap: Map[String, Int] = tweets
+        .map(_.text)
+        .map(text => tokenizer.tokenize(text).toArray)
+        .foldLeft(Map(): Map[String, Int]){(wordMap, tokens) =>
+          tokens.map({ token =>
+            (token.asInstanceOf[Token].getBaseForm match {
+              case null => token.asInstanceOf[Token].getSurfaceForm
+              case x => x
+            }, token.asInstanceOf[Token].getAllFeaturesArray.toList)
+          }).filter { case (word, features) =>
+            features.head match {
+              case "名詞" => features.drop(1).head match {
+                case "非自立" => false
+                case "接尾" => false
+                case "代名詞" => false
+                case "数" => false
+                case x => {
+                  //println(word, x, "aaaaaaaa")
+                  word match {
+                    case "@" => false
+                    case "." => false
+                    case "://" => false
+                    case "/" => false
+                    case ":" => false
+                    case "#" => false
+                    case "  #" => false
+                    case "_" => false
+                    case "ー" => false
+                    case "(" => false
+                    case ")" => false
+                    case "-" => false
+                    case "'" => false
+                    case "!" => false
+                    case "^" => false
+                    case "\"" => false
+                    case "..." => false
+                    case "...!" => false
+                    case pattern(z) => false
+                    case y => {
+                      //println(y, x, "aaaaaaa")
+                      true
+                    }
+                  }
+                }
+              }
+              case "動詞" => features.drop(1).head match {
+                case "非自立" => false
+                case "接尾" => false
+                case x => {
+                  word match {
+                    case "する" => false
+                    case "ある" => false
+                    case "なる" => false
+                    case "いう" => false
+                    case "いく" => false
+                    case "やる" => false
+                    case "くる" => false
+                    case "できる" => false
+                    case y => {
+                      //println(y, x, "aaaaaaaaaaaaa")
+                      true
+                    }
+                  }
+                }
+              }
+              case _ => false
+            }
+          }.map{case (word, features) => word}.foldLeft(wordMap){ (wMap, word) =>
+            wMap.get(word) match {
+              case Some(x) => wMap ++ Map(word -> (x + 1))
+              case None => wMap ++ Map(word -> 1)
+            }
+          }
+        }
+      wordMap.toList.sortBy{ case (word, count) => count}.map{case (word, count) => word}.reverse
+    }
+  }
+
   def createGraph: Future[(List[Uservector], List[Group])] = {
     manageGroupService.deleteAllGroups.flatMap { f =>
       manageTweetService.getTweets(2000)  // TODO 直近30分に限定する

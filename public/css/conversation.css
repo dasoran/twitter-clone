@@ -20,6 +20,8 @@
   margin-left: 30px;
   border-radius: 5px 5px 0 0;
   border: 2px solid #F2E9E1;
+  transition: max-height 1s, width 1s;
+  max-height: 500px;
 }
 .conversation-index {
   padding: 5px 10px;

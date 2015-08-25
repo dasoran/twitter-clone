@@ -161,6 +161,22 @@ var getReplyJSON = function (callback, lastId) {
   });
 };
 
+var getGroupTimelineJSON = function (callback, groupId, lastId) {
+  var url = '/api/grouptimeline/' + groupId;
+  if (lastId != undefined) {
+    url = url + '/' + lastId;
+  }
+  $.ajax({
+    typw: 'GET',
+    url: url, 
+    dataType: 'json',
+    success: function(data) {
+      callback(data);
+    }
+  });
+};
+
+
 
 var createTimeline = function (data, callback) {
   for (var i = 0; i < data.length; i++) {
@@ -202,6 +218,31 @@ var loadReply = function (lastId) {
     });
   }, lastId);
 };
+
+var loadGroupTimeline = function (groupId, lastId) {
+  getGroupTimelineJSON(function(data, lastId) {
+    createGroupTimeline(data, function (event, groupId, lastId) {
+      loadGroupTimeline(groupId, lastId);
+    });
+  }, groupId, lastId);
+};
+
+
+$('.conversation-index').click(function() {
+  var f = $(this);
+  getGroupTimelineJSON(function(data,lastId) {
+    $('.conversation').css('visibility', 'hidden');
+    f.parent().css('visibility', 'visible');
+    $('.conversation').css('max-height', '0');
+    f.parent().css('max-height', '3000px');
+    f.parent().css('height', 'calc(100% - 30px)');
+    setTimeout(function() {
+      $('.conversation').css('display', 'none');
+      f.parent().css('display', 'block');
+      f.parent().css('width', '100%');
+    }, 1000);
+  }, f.attr('id').split('-')[1]);
+});
 
 
 loadTimeline();

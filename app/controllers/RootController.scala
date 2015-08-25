@@ -33,19 +33,22 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
               .map { case (tweet, user) => (tweet, user.get) }
 
             graphService.createGraph.flatMap { case (uservecs, groups) =>
-              val futures: List[Future[(Long, List[User], List[(Tweet, User)])]] =
+              val futures: List[Future[(Long, List[String], List[User], List[(Tweet, User)])]] =
                 groups.filter(_.users.size > 1).map { group =>
-                  manageTweetService.getTweetsByUserIdList(group.users.toList, 5).flatMap { tweets =>
-                    manageUserService.getUsersByUserIdList(group.users.toList).map { users =>
-                      (group.id, users, tweets.map { tweet =>
-                        (tweet, users.find(user => user.id == tweet.user_id))
-                      }.filter { case (tweet, user) => user.isDefined }
-                        .map { case (tweet, user) => (tweet, user.get) })
+                  graphService.createIndex(group).flatMap { indexes =>
+                    manageTweetService.getTweetsByUserIdList(group.users.toList, 5).flatMap { tweets =>
+                      manageUserService.getUsersByUserIdList(group.users.toList).map { users =>
+                        (group.id, indexes.take(3), users, tweets.map { tweet =>
+                          (tweet, users.find(user => user.id == tweet.user_id))
+                        }.filter { case (tweet, user) => user.isDefined }
+                          .map { case (tweet, user) => (tweet, user.get) })
+                      }
                     }
                   }
                 }
 
-              Future.fold(futures)(List(): List[(Long, List[User], List[(Tweet, User)])]) { (tweets, tweet) => tweet :: tweets }
+              Future.fold(futures)(List(): List[(Long, List[String], List[User], List[(Tweet, User)])])
+                { (tweets, tweet) => tweet :: tweets }
                 .map { tweetsOnGroup =>
                   Ok(views.html.index(tweetsWithUser, tweetsOnGroup))
                 }

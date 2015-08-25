@@ -6,6 +6,9 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 
 scalaVersion := "2.11.7"
 
+
+resolvers += "Atilika Open Source repository" at "http://www.atilika.org/nexus/content/repositories/atilika"
+
 libraryDependencies ++= Seq(
   //jdbc,
   //cache,
@@ -26,6 +29,7 @@ libraryDependencies ++= Seq(
 //    ExclusionRule(organization = "org.apache.lucene", name = "lucene-spatial"),
 //    ExclusionRule(organization = "org.apache.lucene", name = "lucene-suggest")
 //    )
+  "org.atilika.kuromoji" % "kuromoji" % "0.7.7",
   "jp.co.bizreach" %% "elastic-scala-httpclient" % "1.0.5",
   "jp.t2v" %% "play2-auth"        % "0.14.0",
   play.sbt.Play.autoImport.cache

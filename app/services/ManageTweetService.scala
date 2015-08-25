@@ -88,7 +88,7 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
       text = tweetDB.text,
       created_at = LocalDateTime.parse(
         tweetDB.created_at.split(" ").drop(1).map(convertEngDateToNumDate).mkString(" "),
-        DateTimeFormatter.ofPattern("MMM dd HH:mm:ss Z yyyy")
+        DateTimeFormatter.ofPattern("M dd HH:mm:ss Z yyyy")
       ),
       favorited_user_id = tweetDB.favorited_user_id
     )
