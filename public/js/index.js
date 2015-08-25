@@ -48,7 +48,11 @@ var setButtonToSelected = function (button) {
 }
 
 
-var createTweet = function(tweet, user) {
+var createTweet = function(tweet, user, myId) {
+  var favClass = '';
+  if (tweet.favorited_user_id.indexOf(myId) != -1) {
+    favClass = 'tweet-favorited';
+  }
   return $('<section></section>', {addClass: 'timeline-tweet'})
     .append(
       $('<div></div>', {addClass: 'tweet-main'})
@@ -89,10 +93,32 @@ var createTweet = function(tweet, user) {
               }}})
             )
             .append(
-              $('<i></i>', {addClass: 'fa fa-star'})
+              $('<i></i>', {addClass: 'fa fa-star ' + favClass, on: {click: function(event) {
+                var f = $(this)
+                var url;
+                if (f.hasClass('tweet-favorited')) {
+                  url = '/api/removeFavorite/' + tweet.id;
+                } else {
+                  url = '/api/addFavorite/' + tweet.id;
+                }
+                $.ajax({
+                  typw: 'GET',
+                  url: url, 
+                  dataType: 'json',
+                  success: function(f) {
+                    return function(data) {
+                      console.log(data);
+                      f.toggleClass('tweet-favorited');
+                    };
+                  }(f)
+                });
+              }}})
             )
             .append(
-              $('<i></i>', {addClass: 'fa fa-retweet'})
+              $('<i></i>', {addClass: 'fa fa-retweet', on: {click: function(event) {
+                $('#tweetInput').val('RT @' + user.screen_name + ": " + tweet.text);
+                $('#tweetModal').modal();
+              }}})
             )
         )
     );
@@ -138,7 +164,7 @@ var getReplyJSON = function (callback, lastId) {
 
 var createTimeline = function (data, callback) {
   for (var i = 0; i < data.length; i++) {
-    var domTweet = createTweet(data[i].tweet, data[i].user)
+    var domTweet = createTweet(data[i].tweet, data[i].user, data[i].myId)
     $('#timeline').append(domTweet);
   }
   var clickFunction = function(lastId) {

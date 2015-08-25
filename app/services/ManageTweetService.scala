@@ -40,6 +40,8 @@ trait ManageTweetService {
   def getReplyTweetsByUserIdListToTheTweet(userIdList: List[Long], screenName: String, num: Int, lastId: Long): Future[List[Tweet]]
 
   def insertTweet(tweet: Tweet): Future[Any]
+
+  def updateTweet(tweet: Tweet): Future[Any]
 }
 
 class ManageTweetWithElasticsearchService extends ManageTweetService with ManageElasticsearch {
@@ -88,8 +90,7 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
         tweetDB.created_at.split(" ").drop(1).map(convertEngDateToNumDate).mkString(" "),
         DateTimeFormatter.ofPattern("MMM dd HH:mm:ss Z yyyy")
       ),
-      retweet_count = tweetDB.retweet_count,
-      favorite_count = tweetDB.favorite_count
+      favorited_user_id = tweetDB.favorited_user_id
     )
   }
 
@@ -205,9 +206,21 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
         created_at = tweet.created_at
           .format(DateTimeFormatter.ofPattern("EEE MM dd HH:mm:ss +0000 yyyy").withLocale(Locale.ENGLISH))
           .split(" ").map(convertNumDateToEngDate).mkString(" "),
-        retweet_count = tweet.retweet_count,
-        favorite_count = tweet.favorite_count
+        favorited_user_id = tweet.favorited_user_id
     )
     AsyncESClient.apply(serverUrl).insertAsync(config, toInsert)
+  }
+
+  def updateTweet(tweet: Tweet): Future[Any] = {
+    val toUpdate = TweetDB(
+      id = tweet.id,
+      user_id = tweet.user_id,
+      text = tweet.text,
+      created_at = tweet.created_at
+        .format(DateTimeFormatter.ofPattern("EEE MM dd HH:mm:ss +0000 yyyy").withLocale(Locale.ENGLISH))
+        .split(" ").map(convertNumDateToEngDate).mkString(" "),
+      favorited_user_id = tweet.favorited_user_id
+    )
+    AsyncESClient.apply(serverUrl).updateAsync(config, toUpdate.id.toString, toUpdate)
   }
 }

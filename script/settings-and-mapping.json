@@ -128,12 +128,8 @@
           "store": "yes",
           "format": "EE MMM d HH:mm:ss Z yyyy"
         },
-        "retweet_count":{
-          "type": "integer",
-          "index": "not_analyzed"
-        },
-        "favorite_count":{
-          "type": "integer",
+        "favorited_user_id":{
+          "type": "long",
           "index": "not_analyzed"
         }
       }

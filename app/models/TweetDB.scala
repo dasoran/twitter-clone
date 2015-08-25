@@ -7,5 +7,4 @@ case class TweetDB(id: Long,
                    user_id: Long,
                    text: String,
                    created_at: String,
-                   retweet_count: Int,
-                   favorite_count: Int)
+                   favorited_user_id: List[Long])

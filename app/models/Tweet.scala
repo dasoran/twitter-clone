@@ -9,5 +9,4 @@ case class Tweet(id: Long,
                  user_id: Long,
                  text: String,
                  created_at: LocalDateTime,
-                 retweet_count: Int,
-                 favorite_count: Int)
+                 favorited_user_id: List[Long])

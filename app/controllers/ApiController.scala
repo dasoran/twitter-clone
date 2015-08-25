@@ -34,14 +34,14 @@ class ApiController @Inject()(
 with I18nSupport with OptionalAuthElement with AuthConfigImpl {
 
   case class TweetWithUser(tweet: TweetForJson,
-                           user: models.User)
+                           user: models.User,
+                           myId: Long)
 
   case class TweetForJson(id: Long,
                           user_id: Long,
                           text: String,
                           created_at: String,
-                          retweet_count: Int,
-                          favorite_count: Int)
+                          favorited_user_id: List[Long])
 
   def timelineUpdate(lastId: Long) = AsyncStack { implicit rs =>
     loggedIn match {
@@ -54,12 +54,11 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
                 tweet.user_id,
                 tweet.text,
                 tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
-                tweet.retweet_count,
-                tweet.favorite_count)
+                tweet.favorited_user_id)
             }.map { tweet =>
               (tweet, users.find(user => user.id == tweet.user_id))
             }.filter { case (tweet, user) => user.isDefined }
-              .map { case (tweet, user) => TweetWithUser(tweet, user.get) }
+              .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
             implicit val tweetWrites = Json.writes[TweetForJson]
             implicit val userWrites = Json.writes[models.User]
@@ -84,12 +83,11 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
                 tweet.user_id,
                 tweet.text,
                 tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
-                tweet.retweet_count,
-                tweet.favorite_count)
+                tweet.favorited_user_id)
             }.map { tweet =>
               (tweet, users.find(user => user.id == tweet.user_id))
             }.filter { case (tweet, user) => user.isDefined }
-              .map { case (tweet, user) => TweetWithUser(tweet, user.get) }
+              .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
             implicit val tweetWrites = Json.writes[TweetForJson]
             implicit val userWrites = Json.writes[models.User]
@@ -114,12 +112,11 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
                 tweet.user_id,
                 tweet.text,
                 tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
-                tweet.retweet_count,
-                tweet.favorite_count)
+                tweet.favorited_user_id)
             }.map { tweet =>
               (tweet, users.find(user => user.id == tweet.user_id))
             }.filter { case (tweet, user) => user.isDefined }
-              .map { case (tweet, user) => TweetWithUser(tweet, user.get) }
+              .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
             implicit val tweetWrites = Json.writes[TweetForJson]
             implicit val userWrites = Json.writes[models.User]
@@ -143,12 +140,11 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
                 tweet.user_id,
                 tweet.text,
                 tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
-                tweet.retweet_count,
-                tweet.favorite_count)
+                tweet.favorited_user_id)
             }.map { tweet =>
               (tweet, users.find(user => user.id == tweet.user_id))
             }.filter { case (tweet, user) => user.isDefined }
-              .map { case (tweet, user) => TweetWithUser(tweet, user.get) }
+              .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
             implicit val tweetWrites = Json.writes[TweetForJson]
             implicit val userWrites = Json.writes[models.User]
@@ -198,8 +194,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
               user_id = user.id,
               text = form.tweetInput,
               created_at = LocalDateTime.now().plusHours(-9),
-              retweet_count = 0,
-              favorite_count = 0
+              favorited_user_id = List()
             )
             manageTweetService.insertTweet(tweet).map { f =>
               Thread.sleep(200)
@@ -212,6 +207,67 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             }
           }
         )
+      }
+      case None => Future.successful(Redirect(routes.RootController.welcome))
+    }
+  }
+
+  def addFavorite(tweetId: Long) = AsyncStack { implicit rs =>
+    loggedIn match {
+      case Some(user) => {
+        manageTweetService.getTweetById(tweetId).flatMap{ tweet =>
+          if (tweet.get.favorited_user_id.contains(user.id)) {
+            Future {
+              implicit val apiResponseWrites = Json.writes[APIResponse]
+              val apiResponse = APIResponse(
+                code = 500,
+                message = "already favorited"
+              )
+              Ok(Json.toJson(apiResponse))
+            }
+          } else {
+            val toUpdate = tweet.get.copy(favorited_user_id = user.id :: tweet.get.favorited_user_id)
+            manageTweetService.updateTweet(toUpdate).map{ f =>
+              implicit val apiResponseWrites = Json.writes[APIResponse]
+              val apiResponse = APIResponse(
+                code = 200,
+                message = "successful"
+              )
+              Ok(Json.toJson(apiResponse))
+            }
+          }
+        }
+      }
+      case None => Future.successful(Redirect(routes.RootController.welcome))
+    }
+  }
+
+  def removeFavorite(tweetId: Long) = AsyncStack { implicit rs =>
+
+    loggedIn match {
+      case Some(user) => {
+        manageTweetService.getTweetById(tweetId).flatMap{ tweet =>
+          if (!tweet.get.favorited_user_id.contains(user.id)) {
+            Future {
+              implicit val apiResponseWrites = Json.writes[APIResponse]
+              val apiResponse = APIResponse(
+                code = 500,
+                message = "already unfavorited"
+              )
+              Ok(Json.toJson(apiResponse))
+            }
+          } else {
+            val toUpdate = tweet.get.copy(favorited_user_id = tweet.get.favorited_user_id.filter(_ != user.id))
+            manageTweetService.updateTweet(toUpdate).map{ f =>
+              implicit val apiResponseWrites = Json.writes[APIResponse]
+              val apiResponse = APIResponse(
+                code = 200,
+                message = "successful"
+              )
+              Ok(Json.toJson(apiResponse))
+            }
+          }
+        }
       }
       case None => Future.successful(Redirect(routes.RootController.welcome))
     }
