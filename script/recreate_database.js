@@ -39,69 +39,112 @@ exec('curl -XDELETE "http://localhost:9200/*"', {maxBuffer: 400*1024}, function 
       if (error !== null) {
         console.log('Exec error: ' + error);
       }
-
-
-      var data = fs.readFileSync('tweet.json', 'utf8');
-      exec("curl -XPOST 'http://localhost:9200/_bulk' -d '" + data.replace(/'/g, "'\\''")  + "'", {maxBuffer: 400*1024}, function (error, stdout, stderr) {
+      var data = fs.readFileSync('user2.json', 'utf8');
+      exec("curl -XPOST 'http://localhost:9200/_bulk' -d '" + data.replace(/'/g, "'\\''") + "'", {maxBuffer: 400*1024}, function (error, stdout, stderr) {
         if(stdout !== null){
           var response = JSON.parse(stdout);
           if (response.errors == true) {
             console.log('stdout: ' + stdout);
           } else {
-            console.log('tweet created');
+            console.log('user created');
           }
+          //console.log('stdout: ' + stdout);
         }
         if (error !== null) {
           console.log('Exec error: ' + error);
         }
 
-        var data = fs.readFileSync('tweet2.json', 'utf8');
+
+
+        var data = fs.readFileSync('tweet.json', 'utf8');
         exec("curl -XPOST 'http://localhost:9200/_bulk' -d '" + data.replace(/'/g, "'\\''")  + "'", {maxBuffer: 400*1024}, function (error, stdout, stderr) {
           if(stdout !== null){
             var response = JSON.parse(stdout);
             if (response.errors == true) {
               console.log('stdout: ' + stdout);
             } else {
-              console.log('tweet2 created');
+              console.log('tweet created');
             }
           }
           if (error !== null) {
             console.log('Exec error: ' + error);
           }
 
-          var data = fs.readFileSync('tweet3.json', 'utf8');
+          var data = fs.readFileSync('tweet2.json', 'utf8');
           exec("curl -XPOST 'http://localhost:9200/_bulk' -d '" + data.replace(/'/g, "'\\''")  + "'", {maxBuffer: 400*1024}, function (error, stdout, stderr) {
             if(stdout !== null){
               var response = JSON.parse(stdout);
               if (response.errors == true) {
                 console.log('stdout: ' + stdout);
               } else {
-                console.log('tweet3 created');
+                console.log('tweet2 created');
               }
             }
             if (error !== null) {
               console.log('Exec error: ' + error);
             }
-          });
 
-            var data = fs.readFileSync('tweet4.json', 'utf8');
+            var data = fs.readFileSync('tweet3.json', 'utf8');
             exec("curl -XPOST 'http://localhost:9200/_bulk' -d '" + data.replace(/'/g, "'\\''")  + "'", {maxBuffer: 400*1024}, function (error, stdout, stderr) {
               if(stdout !== null){
                 var response = JSON.parse(stdout);
                 if (response.errors == true) {
                   console.log('stdout: ' + stdout);
                 } else {
-                  console.log('tweet4 created');
+                  console.log('tweet3 created');
                 }
               }
               if (error !== null) {
                 console.log('Exec error: ' + error);
               }
+
+              var data = fs.readFileSync('tweet4.json', 'utf8');
+              exec("curl -XPOST 'http://localhost:9200/_bulk' -d '" + data.replace(/'/g, "'\\''")  + "'", {maxBuffer: 400*1024}, function (error, stdout, stderr) {
+                if(stdout !== null){
+                  var response = JSON.parse(stdout);
+                  if (response.errors == true) {
+                    console.log('stdout: ' + stdout);
+                  } else {
+                    console.log('tweet4 created');
+                  }
+                }
+                if (error !== null) {
+                  console.log('Exec error: ' + error);
+                }
+
+                var data = fs.readFileSync('tweet5.json', 'utf8');
+                exec("curl -XPOST 'http://localhost:9200/_bulk' -d '" + data.replace(/'/g, "'\\''")  + "'", {maxBuffer: 400*1024}, function (error, stdout, stderr) {
+                  if(stdout !== null){
+                    var response = JSON.parse(stdout);
+                    if (response.errors == true) {
+                      console.log('stdout: ' + stdout);
+                    } else {
+                      console.log('tweet5 created');
+                    }
+                  }
+                  if (error !== null) {
+                    console.log('Exec error: ' + error);
+                  }
+
+                  var data = fs.readFileSync('tweet6.json', 'utf8');
+                  exec("curl -XPOST 'http://localhost:9200/_bulk' -d '" + data.replace(/'/g, "'\\''")  + "'", {maxBuffer: 400*1024}, function (error, stdout, stderr) {
+                    if(stdout !== null){
+                      var response = JSON.parse(stdout);
+                      if (response.errors == true) {
+                        console.log('stdout: ' + stdout);
+                      } else {
+                        console.log('tweet6 created');
+                      }
+                    }
+                    if (error !== null) {
+                      console.log('Exec error: ' + error);
+                    }
+                  });
+                });
+              });
             });
-
-
-
-        });
+          });
+          });
       });
     });
   });

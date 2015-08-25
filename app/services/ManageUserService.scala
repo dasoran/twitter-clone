@@ -93,7 +93,7 @@ class ManageUserWithElasticsearchService extends ManageUserService with ManageEl
     }
   }
 
-  def updateUser(user: User): Future[Any] = {
+  def updateUser(user: User): Future[Either[Map[String, Any], Map[String, Any]]] = {
     AsyncESClient.apply(serverUrl).updateAsync(config, user.id.toString, user)
   }
 }

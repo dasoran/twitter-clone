@@ -2,6 +2,7 @@ package services
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 import com.google.inject.ImplementedBy
 import jp.co.bizreach.elasticsearch4s._
@@ -38,6 +39,7 @@ trait ManageTweetService {
 
   def getReplyTweetsByUserIdListToTheTweet(userIdList: List[Long], screenName: String, num: Int, lastId: Long): Future[List[Tweet]]
 
+  def insertTweet(tweet: Tweet): Future[Any]
 }
 
 class ManageTweetWithElasticsearchService extends ManageTweetService with ManageElasticsearch {
@@ -45,7 +47,7 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
   def config = ESConfig("twitter-clone", "tweet")
 
   def convertEngDateToNumDate(date: String): String = date match {
-    case "Jun" => "1"
+    case "Jan" => "1"
     case "Feb" => "2"
     case "Mar" => "3"
     case "Apr" => "4"
@@ -59,6 +61,23 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
     case "Dec" => "12"
     case _ => date
   }
+
+  def convertNumDateToEngDate(date: String): String = date match {
+    case "01" => "Jan"
+    case "02" => "Feb"
+    case "03" => "Mar"
+    case "04" => "Apr"
+    case "05" => "May"
+    case "06" => "Jun"
+    case "07" => "Jul"
+    case "08" => "Aug"
+    case "09" => "Sep"
+    case "10" => "Oct"
+    case "11" => "Nov"
+    case "12" => "Dec"
+    case _ => date
+  }
+
 
   def convertStringDateToDate(tweetDB: TweetDB): Tweet = {
     Tweet(
@@ -177,4 +196,18 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
           .map(_.map(convertStringDateToDate))
           .map(mappingIdToLongInTweets)
       }
+
+  def insertTweet(tweet: Tweet): Future[Any] = {
+    val toInsert = TweetDB(
+        id = tweet.id,
+        user_id = tweet.user_id,
+        text = tweet.text,
+        created_at = tweet.created_at
+          .format(DateTimeFormatter.ofPattern("EEE MM dd HH:mm:ss +0000 yyyy").withLocale(Locale.ENGLISH))
+          .split(" ").map(convertNumDateToEngDate).mkString(" "),
+        retweet_count = tweet.retweet_count,
+        favorite_count = tweet.favorite_count
+    )
+    AsyncESClient.apply(serverUrl).insertAsync(config, toInsert)
+  }
 }

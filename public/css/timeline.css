@@ -73,6 +73,21 @@
   margin-top: 2px;
 }
 
+.tweet-actions {
+  width: calc(100% - 45px - 20px);
+  float: left;
+  margin: 0;
+  margin-left: 55px;
+  text-align: right;
+}
+
+.tweet-actions > i + i {
+  padding-left: 10px;
+}
+
+
+
+
 
 
 

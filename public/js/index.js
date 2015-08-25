@@ -11,7 +11,7 @@ $('#home').click(function () {
       getTimelineJSON(function(data) {
         deleteTimeline();
         createTimeline(data, function (event, lastId) {
-          console.log(lastId);
+          loadTimeline(lastId);
         });
       });
     }, 500);
@@ -27,7 +27,9 @@ $('#reply').click(function () {
     setTimeout(function() {
       getReplyJSON(function(data) {
         deleteTimeline();
-        createTimeline(data);
+        createTimeline(data, function (event, lastId) {
+          loadReply(lastId);
+        });
       });
     }, 500);
   }
@@ -67,7 +69,7 @@ var createTweet = function(tweet, user) {
           )
           .append(
             $('<div></div>', {addClass: 'tweet-screenname'})
-              .text(tweet.screen_name)
+              .text('@' + user.screen_name)
           )
           .append(
             $('<div></div>', {addClass: 'tweet-diffdate'})
@@ -77,6 +79,18 @@ var createTweet = function(tweet, user) {
         .append(
           $('<p></p>', {addClass: 'tweet-text'})
             .text(tweet.text)
+        )
+        .append(
+          $('<div></div>', {addClass: 'tweet-actions'})
+            .append(
+              $('<i></i>', {addClass: 'fa fa-reply'})
+            )
+            .append(
+              $('<i></i>', {addClass: 'fa fa-star'})
+            )
+            .append(
+              $('<i></i>', {addClass: 'fa fa-retweet'})
+            )
         )
     );
 }
@@ -151,6 +165,15 @@ var loadTimeline = function (lastId) {
     });
   }, lastId);
 };
+
+var loadReply = function (lastId) {
+  getReplyJSON(function(data, lastId) {
+    createTimeline(data, function (event, lastId) {
+      loadReply(lastId);
+    });
+  }, lastId);
+};
+
 
 loadTimeline();
 
