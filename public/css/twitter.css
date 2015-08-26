@@ -37,6 +37,8 @@ body {
 }
 
 .button_logout {
+  padding-top: 5px;
+  padding-left: 4px;
   color: #F2E9E1;
 }
 

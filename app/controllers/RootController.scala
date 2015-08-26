@@ -47,8 +47,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
                   }
                 }
 
-              Future.fold(futures)(List(): List[(Long, List[String], List[User], List[(Tweet, User)])])
-                { (tweets, tweet) => tweet :: tweets }
+              Future.fold(futures)(List(): List[(Long, List[String], List[User], List[(Tweet, User)])]) { (tweets, tweet) => tweet :: tweets }
                 .map { tweetsOnGroup =>
                   Ok(views.html.index(tweetsWithUser, tweetsOnGroup))
                 }
@@ -86,19 +85,22 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
   def favicon = TODO
 
   def follow(screenName: String) = AsyncStack { implicit rs =>
-    loggedIn match {
-      case Some(user) => {
-        manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-          manageUserService.getUsersByUserIdList(userOption.get.follow).map { following =>
-            Ok(views.html.followwithlogin(user, following))
-          }
+    manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
+      manageUserService.getUsersByUserIdList(userOption.get.follow).map { follow =>
+        loggedIn match {
+          case Some(user) => Ok(views.html.followwithlogin(user, follow))
+          case None => Ok(views.html.follow(follow))
         }
       }
-      case None => {
-        manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-          manageUserService.getUsersByUserIdList(userOption.get.follow).map { following =>
-            Ok(views.html.follow(following))
-          }
+    }
+  }
+
+  def follower(screenName: String) = AsyncStack { implicit rs =>
+    manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
+      manageUserService.getUsersByUserIdList(userOption.get.follower).map { follower =>
+        loggedIn match {
+          case Some(user) => Ok(views.html.followwithlogin(user, follower))
+          case None => Ok(views.html.follow(follower))
         }
       }
     }

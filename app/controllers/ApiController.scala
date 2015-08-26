@@ -34,11 +34,12 @@ class ApiController @Inject()(
                                val manageGroupService: ManageGroupService) extends Controller
 with I18nSupport with OptionalAuthElement with AuthConfigImpl {
 
+
   case class TweetWithUser(tweet: TweetForJson,
                            user: models.User,
                            myId: Long)
 
-  case class TweetForJson(id: Long,
+  case class TweetForJson(id: String,
                           user_id: Long,
                           text: String,
                           created_at: String,
@@ -51,7 +52,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
           manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
 
             val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
-              TweetForJson(tweet.id,
+              TweetForJson(tweet.id.toString,
                 tweet.user_id,
                 tweet.text,
                 tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
@@ -80,7 +81,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
           manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
 
             val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
-              TweetForJson(tweet.id,
+              TweetForJson(tweet.id.toString,
                 tweet.user_id,
                 tweet.text,
                 tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
@@ -111,7 +112,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
 
               val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
-                TweetForJson(tweet.id,
+                TweetForJson(tweet.id.toString,
                   tweet.user_id,
                   tweet.text,
                   tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
@@ -142,7 +143,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
 
               val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
-                TweetForJson(tweet.id,
+                TweetForJson(tweet.id.toString,
                   tweet.user_id,
                   tweet.text,
                   tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
@@ -172,7 +173,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
           manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
 
             val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
-              TweetForJson(tweet.id,
+              TweetForJson(tweet.id.toString,
                 tweet.user_id,
                 tweet.text,
                 tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),
@@ -200,7 +201,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
           manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
 
             val tweetsWithUser: List[TweetWithUser] = tweets.map { tweet =>
-              TweetForJson(tweet.id,
+              TweetForJson(tweet.id.toString,
                 tweet.user_id,
                 tweet.text,
                 tweet.created_at.plusHours(9).format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss")),

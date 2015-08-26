@@ -3,10 +3,11 @@
  * One Follow in Follow List
  */
 .follow-item {
-  margin-top: 10px;
+  width: 90%;
   padding: 10px;
-  border-radius: 5px;
-  background-color: #eef;
+  background-color: #ffffff;
+  margin: 0 auto;
+  border: 1px solid #F2E9E1;
 }
 
 .follow-item:after {

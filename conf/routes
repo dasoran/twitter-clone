@@ -28,5 +28,6 @@ GET         /debug/deletegraph                         controllers.DebugControll
 GET         /favicon.ico                               controllers.RootController.favicon
 GET         /:screenName                               controllers.RootController.profile(screenName: String)
 GET         /:screenName/follow                        controllers.RootController.follow(screenName: String)
+GET         /:screenName/follower                      controllers.RootController.follower(screenName: String)
 GET         /:screenName/makefollow                    controllers.RootController.makeFollow(screenName: String)
 GET         /:screenName/makeunfollow                  controllers.RootController.makeUnfollow(screenName: String)

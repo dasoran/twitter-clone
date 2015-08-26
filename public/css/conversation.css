@@ -3,6 +3,7 @@
   width: calc(100% - 500px - 50px);
   height: calc(100% + 10px);
   overflow-y: scroll;
+  overflow-x: hidden;
   float: left;
   margin-top: -10px;
 }

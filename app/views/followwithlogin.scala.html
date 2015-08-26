@@ -3,62 +3,37 @@
 
 @* main.scala.htmlを呼び出す *@
 @main("ユーザ一覧") {
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4"></div>
-      <div class="col-md-8">
-        @users.map { user =>
-          <section class="follow-item">
-            <div class="follow-img"><a href="/@user.screen_name"><img src="/assets/@user.profile_image_url" alt="icon"></a></div>
-            <div class="follow-main">
-              <div class="follow-namecontainer">
-                <div class="follow-username">@user.name</div>
-                <div class="follow-screenname">@@@user.screen_name</div>
-              </div>
-              @if(user.follower.contains(loginUser.id)) {
-              <div class="follow-relation-with-you"><a href="/@user.screen_name/makeunfollow">Following</a></div>
-                } else {
-              <div class="follow-relation-with-you"><a href="/@user.screen_name/makefollow">No Relationship</a></div>
-                }
-              <p class="follow-profile-text">@user.description</p>
+  <div class="index">
+    <div class="timeline-menu">
+      <div class="menu-img"><a href="/"><img src="@routes.Assets.versioned("img/button_home.png")" alt="selected home"></a></div>
+      <div class="menu-img"><a href="/"><img src="@routes.Assets.versioned("img/button_reply.png")" alt="reply"></a></div>
+      <div class="menu-img" id="logout"><a href="/logout"><i class="fa fa-lg fa-sign-out button_logout"></i></a></div>
+    </div>
+    <div class="timeline">
+      @users.map { user =>
+        <section class="follow-item">
+          <div class="follow-img"><a href="/@user.screen_name"><img src="/assets/@user.profile_image_url" alt="icon"></a></div>
+          <div class="follow-main">
+            <div class="follow-namecontainer">
+              <div class="follow-username">@user.name</div>
+              <div class="follow-screenname">@@@user.screen_name</div>
             </div>
-          </section>
-        }
-      </div>
+            @if(user.follower.contains(loginUser.id)) {
+            <div class="follow-relation-with-you"><a href="/@user.screen_name/makeunfollow">Following</a></div>
+              } else {
+            <div class="follow-relation-with-you"><a href="/@user.screen_name/makefollow">No Relationship</a></div>
+              }
+            <p class="follow-profile-text">@user.description</p>
+          </div>
+        </section>
+      }
     </div>
   </div>
-  <div class="modal fade" id="tweetModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <form>
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <h4 class="modal-title">Tweet</h4>
-          </div>
-          <div class="modal-body">
-            <textarea class="form-control" rows="3" id="tweetInput"></textarea>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-primary">Tweet</button>
-          </div>
-        </form>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->
 
   <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
   <script src="@routes.Assets.versioned("js/jquery.min.js")"></script>
   <!-- Latest compiled and minified JavaScript -->
   <script src="@routes.Assets.versioned("js/bootstrap.min.js")"></script>
-  <script>
-    $('body').keypress(function() {
-      if (event.which == 110) {
-        $('#tweetModal').modal();
-      }
-    });
-    $('#tweetModal').on('shown.bs.modal', function () {
-      $('#tweetInput').focus();
-    })
-  </script>
+  @post()
+
 }
