@@ -1,15 +1,11 @@
 @* このテンプレートの引数 *@
 @import java.time.format.DateTimeFormatter
-@(tweetsWithUser: List[(models.Tweet, models.User)], groups: List[(Long, List[String], List[User], List[(models.Tweet, models.User)])])
+@(loginUser: User, tweetsWithUser: List[(models.Tweet, models.User)], groups: List[(Long, List[String], List[User], List[(models.Tweet, models.User)])])
 
 @* main.scala.htmlを呼び出す *@
 @main("Home") {
   <div class="index">
-    <div class="timeline-menu">
-      <div class="menu-img selected" id="home"><img src="assets/img/button_selected_home.png" alt="selected home"></div>
-      <div class="menu-img" id="reply"><img src="assets/img/button_reply.png" alt="reply"></div>
-      <div class="menu-img" id="logout"><a href="/logout"><i class="fa fa-lg fa-sign-out button_logout"></i></a></div>
-    </div>
+    @menu(loginUser.screen_name)
     <div class="timeline" id="timeline">
     </div>
     <div class="index-main-container">

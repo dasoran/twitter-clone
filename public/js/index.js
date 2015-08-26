@@ -99,6 +99,8 @@ var setButtonToSelected = function (button) {
   var menuImgs = $('.menu-img');
   for (var i = 0; i < menuImgs.length; i++) {
     if ($(menuImgs[i]).attr('id') == 'logout') continue;
+    if ($(menuImgs[i]).attr('id') == 'tweet') continue;
+    if ($(menuImgs[i]).attr('id') == 'user') continue;
     $('img', menuImgs[i]).attr('src', buttonList[menuImgs[i].id].notselected);
   }
   $('.menu-img#' + button + ' > img').attr('src', buttonList[button].selected);

@@ -58,6 +58,9 @@
         }
       }
     });
+    $('.menu-tweet').click(function () {
+      $('#tweetModal').modal();
+    });
 
     $('#tweetModal').on('shown.bs.modal', function () {
       isShown = true;

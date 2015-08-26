@@ -5,11 +5,7 @@
 @* main.scala.htmlを呼び出す *@
 @main(user.name + "'s profile") {
   <div class="index">
-    <div class="timeline-menu">
-      <div class="menu-img"><a href="/"><img src="@routes.Assets.versioned("img/button_home.png")" alt="selected home"></a></div>
-      <div class="menu-img"><a href="/"><img src="@routes.Assets.versioned("img/button_reply.png")" alt="reply"></a></div>
-      <div class="menu-img" id="logout"><a href="/logout"><i class="fa fa-lg fa-sign-out button_logout"></i></a></div>
-    </div>
+    @menunoindex(loginUser.screen_name)
     <div class="timeline">
       @tweetsWithUser.map { case (tweet, user) =>
         <section class="timeline-tweet">

@@ -25,20 +25,42 @@ body {
   content: "";
 }
 .timeline-menu {
+  position: relative;
   width: 50px;
   height: 100%;
   float: left;
   padding-top: 10px;
   background-color: #1C140D;
-  text-align: center;
 }
 .timeline-menu > .menu-img + .menu-img {
   margin-top: 10px;
 }
 
+.menu-img > a > i {
+  color: #F2E9E1;
+}
+
+.menu-user {
+  width: 47px;
+  height: 33px;
+  text-align: center;
+  color: #F2E9E1;
+}
+.menu-tweet {
+  width: 47px;
+  height: 33px;
+  text-align: center;
+  color: #F2E9E1;
+}
+.menu-logout {
+  position: absolute;
+  bottom: 0;
+  width: 47px;
+  height: 33px;
+  text-align: center;
+  color: #F2E9E1;
+}
 .button_logout {
-  padding-top: 5px;
-  padding-left: 4px;
   color: #F2E9E1;
 }
 
