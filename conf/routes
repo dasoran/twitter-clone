@@ -8,7 +8,6 @@ GET         /assets/*file                              controllers.Assets.versio
 GET         /                                          controllers.RootController.index
 GET         /welcome                                   controllers.RootController.welcome
 GET         /signup                                    controllers.AuthController.signup
-GET         /login                                     controllers.AuthController.login
 GET         /logout                                    controllers.AuthController.logout
 POST        /create                                    controllers.AuthController.create
 POST        /authenticate                              controllers.AuthController.authenticate

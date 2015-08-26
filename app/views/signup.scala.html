@@ -1,55 +1,21 @@
-@(signupForm: Form[models.forms.SignupForm])(implicit messages: Messages)
 
-@* テンプレートで利用可能なヘルパーをインポート *@
-@import helper._
 
-@* main.scala.htmlを呼び出す *@
-@main("ユーザ一覧") {
-  <div class="container">
-    <div class="row">
-      <div class="col-md-4"></div>
-      <div class="col-md-4">
-        @form(routes.AuthController.create, 'role -> "form") {
-          <fieldset>
-            <div class="form-group">
-              @inputText(signupForm("signupInputUserId1"), '_label -> "User id", 'class -> "form-control")
-            </div>
-            <div class="form-group">
-              @inputText(signupForm("signupInputEmail1"), '_label -> "Email", 'class -> "form-control")
-            </div>
-            <div class="form-group">
-              @inputPassword(signupForm("signupInputPassword1"), '_label -> "Password", 'class -> "form-control")
-            </div>
-            <button type="submit" class="btn btn-default">Submit</button>
-          </fieldset>
-        }
-        <!--
-        <form action="signup/create" method="post">
-          <div class="form-group">
-            <label for="signupInputUserId1">User id</label>
-            <input type="text" class="form-control" id="signupInputUserId1" placeholder="User id">
-          </div>
-          <div class="form-group">
-            <label for="signupInputEmail1">Email address</label>
-            <input type="email" class="form-control" id="signupInputEmail1" placeholder="Email">
-          </div>
-          <div class="form-group">
-            <label for="signupInputPassword1">Password</label>
-            <input type="password" class="form-control" id="signupInputPassword1" placeholder="Password">
-          </div>
-          <button type="submit" class="btn btn-default">Submit</button>
-        </form>
-        -->
-      </div>
-      <div class="col-md-4"></div>
-    </div>
+@main("welcome") {
+<div class="welcome-container">
+  <div class="welcome-mainpanel"><img src="/assets/img/bg.jpg" alt="welcome board"></div>
+  <div class="welcome-message">
+    <h1>Connectter</h1>
+    <h2>毎日のコミュニケーションに新しい広がりを</h2>
+    
+    <form action="/create" method="post" class="welcome-signup-form">
+      <input type="text" placeholder="username" name="signupInputUserId1"><br>
+      <input type="text" placeholder="email" name="signupInputEmail1"><br>
+      <input type="password" placeholder="password" name="signupInputPassword1"><br>
+      <input class="welcome-signup-send" type="submit" value="登録">
+    </form>
+    <a href="/welcome"><div class="welcome-signup-login">ログインはこちら</div></a>
+
   </div>
-
-
-
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="@routes.Assets.versioned("js/jquery.min.js")"></script>
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="@routes.Assets.versioned("js/bootstrap.min.js")"></script>
+</div>
 }
 

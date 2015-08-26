@@ -1,21 +1,20 @@
 
 
-@main("ユーザ一覧") {
-  <div class="container">
-    <div class="index-header">
-      <h1>Twitterクローン</h1>
-    </div>
-    <div class="row">
-      <div class="col-md-4"></div>
-      <div class="col-md-4">
-        <a href="/signup">
-          <button type="button" class="btn btn-primary btn-lg btn-block">Sign up</button>
-        </a>
-        <a href="/login">
-          <button type="button" class="btn btn-default btn-lg btn-block">Login</button>
-        </a>
-      </div>
-      <div class="col-md-4"></div>
-    </div>
+@main("welcome") {
+<div class="welcome-container">
+  <div class="welcome-mainpanel"><img src="/assets/img/bg.jpg" alt="welcome board"></div>
+  <div class="welcome-message">
+    <h1>Connectter</h1>
+    <h2>毎日のコミュニケーションに新しい広がりを</h2>
+    
+    <form action="/authenticate" method="post" class="welcome-login-form">
+      <input type="text" placeholder="username" name="loginInputUserId1"><br>
+      <input type="password" placeholder="password" name="loginInputPassword1"><br>
+      <input class="welcome-login-send" type="submit" value="ログイン">
+    </form>
+    <a href="/signup"><div class="welcome-login-signup">登録はこちら</div></a>
+
   </div>
+</div>
 }
+

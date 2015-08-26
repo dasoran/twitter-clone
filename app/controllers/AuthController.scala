@@ -41,12 +41,8 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
 
   def signup = Action.async { implicit rs =>
     Future {
-      Ok(views.html.signup(signupForm))
+      Ok(views.html.signup())
     }
-  }
-
-  def login = Action.async { implicit request =>
-    Future(Ok(views.html.login(loginForm)))
   }
 
   def logout = Action.async { implicit request =>
@@ -55,7 +51,7 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
 
   def authenticate = Action.async { implicit request =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(BadRequest(views.html.login(formWithErrors))),
+      formWithErrors => Future.successful(Redirect(routes.RootController.index)),
       user => gotoLoginSucceeded(user.get.id)
     )
   }
@@ -68,7 +64,7 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
         //BadRequest(views.html.signup(error, signupForm))
         println(error.errorsAsJson)
         Future {
-          BadRequest(views.html.signup(signupForm))
+          BadRequest(views.html.signup())
         }
       },
       // OKの場合
