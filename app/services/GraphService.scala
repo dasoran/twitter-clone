@@ -1,6 +1,7 @@
 package services
 
 import java.security.SecureRandom
+import java.time.LocalDateTime
 
 import com.google.inject.Inject
 import models.{Group, Uservector, User, Tweet}
@@ -107,7 +108,8 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
   }
 
   def createGraph: Future[(List[Uservector], List[Group])] = {
-    manageGroupService.deleteAllGroups.flatMap { f =>
+    //manageGroupService.deleteAllGroups.flatMap { f =>
+    manageGroupService.deleteOldGroups.flatMap { f =>
       manageTweetService.getTweets(2000)  // TODO 直近30分に限定する
         .flatMap { tweets =>
           val pattern = ".*@(\\w+)\\s.*".r
@@ -163,7 +165,7 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
               val groups: List[Group] = rawGroups.map { rawGroup =>
                 val r = new Random(new SecureRandom())
                 val groupId = Math.abs(r.nextLong())
-                val group = Group(groupId, rawGroup)
+                val group = Group(groupId, rawGroup, LocalDateTime.now().plusHours(-9))
                 manageGroupService.insertGroup(group)
                 group
               }.toList.sortBy(group => group.users.size)
@@ -172,5 +174,6 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
             }
         }
     }
+    //}
   }
 }

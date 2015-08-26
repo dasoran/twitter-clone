@@ -15,6 +15,11 @@
         "users": {
           "type": "long",
           "index": "not_analyzed"
+        },
+        "created_at":{
+          "type": "date",
+          "store": "yes",
+          "format": "EE MMM d HH:mm:ss Z yyyy"
         }
       }
     },

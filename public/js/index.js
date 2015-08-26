@@ -274,7 +274,7 @@ $('.conversation-index').click(function() {
     );
     setTimeout(function () {
       $('.conversation-detail').css('left', 0);
-    }, 400);
+    }, 300);
     createGroupTimeline(data,function (event, lastId) {
       loadGroupTimeline(groupId, lastId);
     });
