@@ -38,7 +38,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
                   graphService.createIndex(group).flatMap { indexes =>
                     manageTweetService.getTweetsByUserIdList(group.users.toList, 5).flatMap { tweets =>
                       manageUserService.getUsersByUserIdList(group.users.toList).map { users =>
-                        (group.id, indexes.take(3), users, tweets.map { tweet =>
+                        (group.id, indexes.take(5), users, tweets.map { tweet =>
                           (tweet, users.find(user => user.id == tweet.user_id))
                         }.filter { case (tweet, user) => user.isDefined }
                           .map { case (tweet, user) => (tweet, user.get) })

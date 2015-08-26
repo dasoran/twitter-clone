@@ -199,6 +199,28 @@ var createTimeline = function (data, callback) {
   );
 }
 
+var createGroupTimeline = function (data, callback) {
+  for (var i = 0; i < data.length; i++) {
+    var domTweet = createTweet(data[i].tweet, data[i].user, data[i].myId)
+    $('#conversationTimeline').append(domTweet);
+  }
+  var clickFunction = function(lastId) {
+    return function(event) {
+      $($('#conversationTimeline > section')[$('#conversationTimeline > section').length - 1]).remove()
+      callback(event, lastId)
+    };
+  }(data[data.length - 1].tweet.id);
+
+  $('#conversationTimeline').append(
+    $('<section></section>', {addClass: 'timeline-tweet'})
+    .append(
+      $('<div></div>', {addClass: 'tweet-main', on:{click: clickFunction}})
+      .text('↓')
+    )
+  );
+}
+
+
 var deleteTimeline = function () {
   $('#timeline').html('');
 }
@@ -221,7 +243,7 @@ var loadReply = function (lastId) {
 
 var loadGroupTimeline = function (groupId, lastId) {
   getGroupTimelineJSON(function(data, lastId) {
-    createGroupTimeline(data, function (event, groupId, lastId) {
+    createGroupTimeline(data, function (event, lastId) {
       loadGroupTimeline(groupId, lastId);
     });
   }, groupId, lastId);
@@ -230,18 +252,32 @@ var loadGroupTimeline = function (groupId, lastId) {
 
 $('.conversation-index').click(function() {
   var f = $(this);
+  var groupId = f.attr('id').split('-')[1];
   getGroupTimelineJSON(function(data,lastId) {
-    $('.conversation').css('visibility', 'hidden');
-    f.parent().css('visibility', 'visible');
-    $('.conversation').css('max-height', '0');
-    f.parent().css('max-height', '3000px');
-    f.parent().css('height', 'calc(100% - 30px)');
-    setTimeout(function() {
-      $('.conversation').css('display', 'none');
-      f.parent().css('display', 'block');
-      f.parent().css('width', '100%');
-    }, 1000);
-  }, f.attr('id').split('-')[1]);
+    $('.index-main-container').append(
+      $('<div></div>', {addClass: 'conversation-detail', on:{click: function() {
+        $('.conversation-detail').css('left', '100%');
+        setTimeout(function () {
+          $('.conversation-detail').remove();
+        }, 1000);
+      }}})
+        .append(
+          $('<div></div>', {addClass: 'conversation-title', id: 'conversationTitle'})
+            .text('話題：' + f.attr('data-index'))
+        )
+        .append(
+          $('<div></div>', {addClass: 'conversation-timeline', id: 'conversationTimeline', on:{click: function(event) {
+            event.stopPropagation();
+          }}})
+        )
+    );
+    setTimeout(function () {
+      $('.conversation-detail').css('left', 0);
+    }, 400);
+    createGroupTimeline(data,function (event, lastId) {
+      loadGroupTimeline(groupId, lastId);
+    });
+  }, groupId);
 });
 
 

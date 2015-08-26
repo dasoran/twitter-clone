@@ -1,4 +1,5 @@
 .index-main-container  {
+  position: relative;
   width: calc(100% - 500px - 50px);
   height: 100%;
   overflow-y: scroll;
@@ -20,8 +21,6 @@
   margin-left: 30px;
   border-radius: 5px 5px 0 0;
   border: 2px solid #F2E9E1;
-  transition: max-height 1s, width 1s;
-  max-height: 500px;
 }
 .conversation-index {
   padding: 5px 10px;
@@ -46,6 +45,39 @@
 .conversation-member > a > img {
   width: 24px;
   height: 24px;
+}
+
+.conversation-detail {
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 60px);
+  left: 1000px;
+  top: 0;
+  margin: 40px 30px 30px 30px;
+  background-color: rgba( 22, 14, 13, 0.9 );
+  border: 5px solid #1C140D;
+  border-radius: 5px;
+  padding: 30px;
+  transition: left 0.5s ease-out;
+}
+.conversation-detail:after {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+.conversation-title {
+  width: 100%;
+  float: left;
+  padding: 30px;
+  color: #F2E9E1;
+}
+
+.conversation-timeline {
+  width: 420px;
+  height: calc(100% - 60px - 20px);
+  float: left;
+  overflow-y: scroll;
 }
 
 /*
