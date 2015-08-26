@@ -30,7 +30,7 @@ GET         /debug/uploadbase                          controllers.DebugControll
 GET         /favicon.ico                               controllers.RootController.favicon
 GET         /:screenName                               controllers.RootController.profile(screenName: String)
 GET         /:screenName/edit                          controllers.RootController.edit(screenName: String)
-GET         /:screenName/update                          controllers.RootController.update(screenName: String)
+POST        /:screenName/update                        controllers.RootController.update(screenName: String)
 GET         /:screenName/follow                        controllers.RootController.follow(screenName: String)
 GET         /:screenName/follower                      controllers.RootController.follower(screenName: String)
 GET         /:screenName/makefollow                    controllers.RootController.makeFollow(screenName: String)

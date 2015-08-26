@@ -87,13 +87,13 @@
  */
 .conversation-preview {
   margin: 0 auto;
-  background-color: #CBE86B;
   font-size: 0.5em;
 }
 
 .conversation-preview-tweet-main {
   padding: 5px;
   border: 1px solid #F2E9E1;
+  color: #eee;
 }
 
 .conversation-preview-tweet-main:after {

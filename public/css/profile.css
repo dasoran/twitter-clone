@@ -37,10 +37,18 @@
   float: left;
 }
 
+.profile-username > input {
+  width: 90%;
+}
+
+.profile-screenname > input {
+  width: 90%;
+}
+
 .profile-text {
   margin-top: 20px;
   margin-bottom: 20px;
-  width: 100%;
+  width: 90%;
 }
 
 .profile-username {

@@ -185,7 +185,18 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
     profileForm.bindFromRequest.fold(
       formWithErrors => Future(Ok(views.html.notfound("更新に失敗しました", "入力された値が不正です。"))),
       user => {
-        Future(Redirect(routes.RootController.profile(screenName)))
+        loggedIn match {
+          case Some(oldUser) => {
+            manageUserService.updateUser(oldUser.copy(
+              name = user.name, screen_name = user.screen_name,
+              profile_image_url = user.profile_image_url, description = user.profile_text)
+            ).map { f =>
+              Thread.sleep(1000)
+              Redirect(routes.RootController.profile(screenName))
+            }
+          }
+          case None => Future.successful(Redirect(routes.RootController.profile(screenName)))
+        }
       }
     )
   }
