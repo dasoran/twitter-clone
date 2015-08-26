@@ -30,9 +30,14 @@ body {
   float: left;
   padding-top: 10px;
   background-color: #1C140D;
+  text-align: center;
 }
 .timeline-menu > .menu-img + .menu-img {
   margin-top: 10px;
+}
+
+.button_logout {
+  color: #F2E9E1;
 }
 
 .loading {

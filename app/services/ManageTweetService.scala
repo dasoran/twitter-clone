@@ -149,8 +149,10 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
 
   def getReplyTweetsByUserIdList(userIdList: List[Long], screenName: String, num: Int): Future[List[Tweet]] = {
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
-      searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
-        .setQuery(matchQuery("text", "@" + screenName))
+      searcher
+        .setQuery(QueryBuilders.boolQuery()
+          .must(QueryBuilders.termsQuery("user_id", userIdList: _*))
+          .must(QueryBuilders.matchQuery("text", "@" + screenName)))
         .setSize(num)
         .addSort("created_at", SortOrder.DESC)
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
@@ -168,10 +170,12 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
       )))
       .flatMap { lastTweet =>
         AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
-      searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
+      searcher
+        .setQuery(QueryBuilders.boolQuery()
+          .must(QueryBuilders.termsQuery("user_id", userIdList: _*))
+          .must(QueryBuilders.rangeQuery("created_at").lt(lastTweet.get.created_at)))
         .setSize(num)
         .addSort("created_at", SortOrder.DESC)
-        .setQuery(rangeQuery("created_at").lt(lastTweet.get.created_at))
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
           .map(_.map(convertStringDateToDate))
           .map(mappingIdToLongInTweets)
@@ -188,11 +192,13 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
       )))
       .flatMap { lastTweet =>
         AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
-      searcher.setQuery(QueryBuilders.termsQuery("user_id", userIdList: _*))
-        .setQuery(matchQuery("text", "@" + screenName))
+      searcher
+        .setQuery(QueryBuilders.boolQuery()
+          .must(QueryBuilders.termsQuery("user_id", userIdList: _*))
+          .must(QueryBuilders.rangeQuery("created_at").lt(lastTweet.get.created_at))
+          .must(QueryBuilders.matchQuery("text", "@" + screenName)))
         .setSize(num)
         .addSort("created_at", SortOrder.DESC)
-        .setQuery(rangeQuery("created_at").lt(lastTweet.get.created_at))
     }.map(_.list.filter(_.doc.id != 0).map(_.doc))
           .map(_.map(convertStringDateToDate))
           .map(mappingIdToLongInTweets)

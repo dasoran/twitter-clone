@@ -49,6 +49,10 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
     Future(Ok(views.html.login(loginForm)))
   }
 
+  def logout = Action.async { implicit request =>
+    gotoLogoutSucceeded
+  }
+
   def authenticate = Action.async { implicit request =>
     loginForm.bindFromRequest.fold(
       formWithErrors => Future.successful(BadRequest(views.html.login(formWithErrors))),

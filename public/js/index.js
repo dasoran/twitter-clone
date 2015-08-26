@@ -42,9 +42,10 @@ var setButtonToSelected = function (button) {
   };
   var menuImgs = $('.menu-img');
   for (var i = 0; i < menuImgs.length; i++) {
-    $('a > img', menuImgs[i]).attr('src', buttonList[menuImgs[i].id].notselected);
+    if ($(menuImgs[i]).attr('id') == 'logout') continue;
+    $('img', menuImgs[i]).attr('src', buttonList[menuImgs[i].id].notselected);
   }
-  $('.menu-img#' + button + ' > a > img').attr('src', buttonList[button].selected);
+  $('.menu-img#' + button + ' > img').attr('src', buttonList[button].selected);
 }
 
 
