@@ -57,7 +57,7 @@ $('#home').click(function () {
         topTLElement = data[0];
         timelineIntervalHandler = setInterval(function() {
           insertNewerTweet();
-        }, 15 * 1000);
+        }, 5 * 1000);
         deleteTimeline();
         createTimeline(data, function (event, lastId) {
           loadTimeline(lastId);
@@ -81,7 +81,7 @@ $('#reply').click(function () {
         topReplyElement = data[0];
         replyIntervalHandler = setInterval(function() {
           insertNewerReply();
-        }, 15 * 1000);
+        }, 5 * 1000);
         deleteTimeline();
         createTimeline(data, function (event, lastId) {
           loadReply(lastId);
@@ -351,5 +351,5 @@ loadTimeline();
 
 timelineIntervalHandler = setInterval(function() {
   insertNewerTweet();
-}, 15 * 1000);
+}, 5 * 1000);
 
