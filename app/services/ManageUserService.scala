@@ -76,21 +76,21 @@ class ManageUserWithElasticsearchService extends ManageUserService with ManageEl
   def insertUser(user: User): Future[Any] = {
     AsyncESClient.apply(serverUrl).insertAsync(config, user)
 
-    /* 検証用 */
-    .flatMap{f =>
-      AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
-        searcher.setSize(200)
-      }.flatMap { users =>
-        val followList = users.list.filter(_.doc.id != 0).map(_.doc).map { targetUser =>
-          val toUpdate = targetUser.copy(follower = user.id :: targetUser.follower)
-          AsyncESClient.apply(serverUrl).updateAsync(config, toUpdate.id.toString, toUpdate)
-          targetUser.id
-        }
-        val toUpdate = user.copy(follow = followList)
-        AsyncESClient.apply(serverUrl).updateAsync(config, toUpdate.id.toString, toUpdate)
-        /* 検証用 */
-      }
-    }
+//    /* 検証用 */
+//    .flatMap{f =>
+//      AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
+//        searcher.setSize(200)
+//      }.flatMap { users =>
+//        val followList = users.list.filter(_.doc.id != 0).map(_.doc).map { targetUser =>
+//          val toUpdate = targetUser.copy(follower = user.id :: targetUser.follower)
+//          AsyncESClient.apply(serverUrl).updateAsync(config, toUpdate.id.toString, toUpdate)
+//          targetUser.id
+//        }
+//        val toUpdate = user.copy(follow = followList)
+//        AsyncESClient.apply(serverUrl).updateAsync(config, toUpdate.id.toString, toUpdate)
+//        /* 検証用 */
+//      }
+//    }
   }
 
   def updateUser(user: User): Future[Either[Map[String, Any], Map[String, Any]]] = {
