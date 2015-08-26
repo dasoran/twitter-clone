@@ -7,7 +7,9 @@ var topReplyElement;
 
 var insertNewerTweet = function() {
   getTimelineJSON(function(data) {
-    var topTweetId = topTLElement.tweet.id
+    var topTweetId;
+    if (topTLElement == undefined) topTweetId = -1;
+    else topTweetId = topTLElement.tweet.id;
     for (var oldPoint = 0; oldPoint < data.length; oldPoint++) {
       var tweetId = data[oldPoint].tweet.id;
       if (tweetId == topTweetId) break;
@@ -22,7 +24,9 @@ var insertNewerTweet = function() {
 
 var insertNewerReply = function() {
   getReplyJSON(function(data) {
-    var topTweetId = topReplyElement.tweet.id
+    var topTweetId;
+    if (topTLElement == undefined) topTweetId = -1;
+    else topTweetId = topReplyElement.tweet.id;
     for (var oldPoint = 0; oldPoint < data.length; oldPoint++) {
       var tweetId = data[oldPoint].tweet.id;
       if (tweetId == topTweetId) break;
@@ -51,13 +55,13 @@ $('#home').click(function () {
     setTimeout(function() {
       getTimelineJSON(function(data) {
         topTLElement = data[0];
+        timelineIntervalHandler = setInterval(function() {
+          insertNewerTweet();
+        }, 15 * 1000);
         deleteTimeline();
         createTimeline(data, function (event, lastId) {
           loadTimeline(lastId);
         });
-        timelineIntervalHandler = setInterval(function() {
-          insertNewerTweet();
-        }, 15 * 1000);
       });
     }, 500);
   }
@@ -75,13 +79,13 @@ $('#reply').click(function () {
     setTimeout(function() {
       getReplyJSON(function(data) {
         topReplyElement = data[0];
+        replyIntervalHandler = setInterval(function() {
+          insertNewerReply();
+        }, 15 * 1000);
         deleteTimeline();
         createTimeline(data, function (event, lastId) {
           loadReply(lastId);
         });
-        replyIntervalHandler = setInterval(function() {
-          insertNewerReply();
-        }, 15 * 1000);
       });
     }, 500);
   }

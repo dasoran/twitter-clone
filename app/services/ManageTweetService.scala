@@ -119,7 +119,6 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
     AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
       searcher
         .setQuery(QueryBuilders.boolQuery()
-          .must(QueryBuilders.termsQuery("user_id", userIdList: _*))
           .must(QueryBuilders.matchQuery("text", "@" + screenName)))
         .setSize(num)
         .addSort("created_at", SortOrder.DESC)
@@ -162,7 +161,6 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
         AsyncESClient.apply(serverUrl).listAsync[TweetDB](config) { searcher =>
       searcher
         .setQuery(QueryBuilders.boolQuery()
-          .must(QueryBuilders.termsQuery("user_id", userIdList: _*))
           .must(QueryBuilders.rangeQuery("created_at").lt(lastTweet.get.created_at))
           .must(QueryBuilders.matchQuery("text", "@" + screenName)))
         .setSize(num)
