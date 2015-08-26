@@ -53,5 +53,9 @@ class DebugController @Inject()(val messagesApi: MessagesApi,
       Ok(views.html.debug.deletegraph())
     }
   }
+
+  def uploadBase = Action { implicit rs =>
+      Ok(views.html.debug.upload())
+  }
 }
 

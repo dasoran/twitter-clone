@@ -2,6 +2,8 @@ package controllers
 
 import jp.t2v.lab.play2.auth.OptionalAuthElement
 import models._
+import play.api.data._
+import play.api.data.Forms._
 import play.api.mvc.Results._
 import play.api.mvc._
 import play.api.i18n.{MessagesApi, I18nSupport}
@@ -64,73 +66,127 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
   }
 
   def profile(screenName: String) = AsyncStack { implicit rs =>
-    loggedIn match {
-      case Some(user) => {
-        manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-          manageTweetService.getTweetsByUserId(userOption.get.id).map { tweets =>
-            Ok(views.html.profilewithlogin(user, userOption.get, tweets.map((_, userOption.get))))
+    manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
+      userOption match {
+        case Some(targetUser) => {
+          manageTweetService.getTweetsByUserId(targetUser.id).map { tweets =>
+            loggedIn match {
+              case Some(user) => Ok(views.html.profilewithlogin(user, targetUser, tweets.map((_, targetUser))))
+              case None => Ok(views.html.profile(targetUser, tweets.map((_, targetUser))))
+            }
           }
         }
-      }
-      case None => {
-        manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-          manageTweetService.getTweetsByUserId(userOption.get.id).map { tweets =>
-            Ok(views.html.profile(userOption.get, tweets.map((_, userOption.get))))
-          }
-        }
+        case None => Future(
+          Ok(views.html.notfound("ユーザーが存在しません", "そのユーザーは存在しません。IDを確認してください。"))
+        )
       }
     }
   }
 
   def favicon = TODO
 
-  def follow(screenName: String) = AsyncStack { implicit rs =>
-    manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-      manageUserService.getUsersByUserIdList(userOption.get.follow).map { follow =>
-        loggedIn match {
-          case Some(user) => Ok(views.html.followwithlogin(user, follow))
-          case None => Ok(views.html.follow(follow))
-        }
+  def follow(screenName: String) = AsyncStack {
+    implicit rs =>
+      manageUserService.getUserByScreenName(screenName).flatMap {
+        userOption =>
+          manageUserService.getUsersByUserIdList(userOption.get.follow).map {
+            follow =>
+              loggedIn match {
+                case Some(user) => Ok(views.html.followwithlogin(user, follow))
+                case None => Ok(views.html.follow(follow))
+              }
+          }
       }
-    }
   }
 
-  def follower(screenName: String) = AsyncStack { implicit rs =>
-    manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-      manageUserService.getUsersByUserIdList(userOption.get.follower).map { follower =>
-        loggedIn match {
-          case Some(user) => Ok(views.html.followwithlogin(user, follower))
-          case None => Ok(views.html.follow(follower))
-        }
+  def follower(screenName: String) = AsyncStack {
+    implicit rs =>
+      manageUserService.getUserByScreenName(screenName).flatMap {
+        userOption =>
+          manageUserService.getUsersByUserIdList(userOption.get.follower).map {
+            follower =>
+              loggedIn match {
+                case Some(user) => Ok(views.html.followwithlogin(user, follower))
+                case None => Ok(views.html.follow(follower))
+              }
+          }
       }
-    }
   }
 
-  def makeFollow(screenName: String) = AsyncStack { implicit rs =>
-    loggedIn match {
-      case Some(user) => {
-        manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-          userService.makeFollow(user, userOption.get).map { user =>
-            Thread.sleep(1000)
-            Redirect(routes.RootController.profile(screenName))
+  def makeFollow(screenName: String) = AsyncStack {
+    implicit rs =>
+      loggedIn match {
+        case Some(user) => {
+          manageUserService.getUserByScreenName(screenName).flatMap {
+            userOption =>
+              userService.makeFollow(user, userOption.get).map {
+                user =>
+                  Thread.sleep(1000)
+                  Redirect(routes.RootController.profile(screenName))
+              }
           }
         }
+        case None => Future.successful(Redirect(routes.RootController.profile(screenName)))
       }
-      case None => Future.successful(Redirect(routes.RootController.profile(screenName)))
+  }
+
+  def makeUnfollow(screenName: String) = AsyncStack {
+    implicit rs =>
+      loggedIn match {
+        case Some(user) => {
+          manageUserService.getUserByScreenName(screenName).flatMap {
+            userOption =>
+              userService.makeUnfollow(user, userOption.get).map {
+                user =>
+                  Thread.sleep(1000)
+                  Redirect(routes.RootController.profile(screenName))
+              }
+          }
+        }
+        case None => Future.successful(Redirect(routes.RootController.profile(screenName)))
+      }
+  }
+
+  def edit(screenName: String) = AsyncStack { implicit rs =>
+    manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
+      userOption match {
+        case Some(targetUser) => {
+          manageTweetService.getTweetsByUserId(targetUser.id).map { tweets =>
+            loggedIn match {
+              case Some(user) => {
+                user match {
+                  case x if x == targetUser => Ok(views.html.profileedit(user, targetUser, tweets.map((_, targetUser))))
+                  case _ => Ok(views.html.notfound("権限がありません", "ユーザー情報は本人しか編集できません。"))
+                }
+              }
+              case None => Ok(views.html.notfound("権限がありません", "ユーザー情報はログインしなければ編集できません。"))
+            }
+          }
+        }
+        case None => Future(
+          Ok(views.html.notfound("ユーザーが存在しません", "そのユーザーは存在しません。IDを確認してください。"))
+        )
+      }
     }
   }
 
-  def makeUnfollow(screenName: String) = AsyncStack { implicit rs =>
-    loggedIn match {
-      case Some(user) => {
-        manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
-          userService.makeUnfollow(user, userOption.get).map { user =>
-            Thread.sleep(1000)
-            Redirect(routes.RootController.profile(screenName))
-          }
-        }
+  case class ProfileForm(name: String, screen_name: String, profile_image_url: String, profile_text: String)
+
+  val profileForm = Form(
+    mapping(
+      "name" -> nonEmptyText(maxLength = 50),
+      "screen_name" -> nonEmptyText(maxLength = 20),
+      "profile_image_url" -> nonEmptyText(maxLength = 200),
+      "profile_text" -> nonEmptyText(maxLength = 200)
+    )(ProfileForm.apply)(ProfileForm.unapply)
+  )
+
+  def update(screenName: String) = AsyncStack{implicit rs =>
+    profileForm.bindFromRequest.fold(
+      formWithErrors => Future(Ok(views.html.notfound("更新に失敗しました", "入力された値が不正です。"))),
+      user => {
+        Future(Redirect(routes.RootController.profile(screenName)))
       }
-      case None => Future.successful(Redirect(routes.RootController.profile(screenName)))
-    }
+    )
   }
 }

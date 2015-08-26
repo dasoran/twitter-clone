@@ -337,4 +337,27 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
       case None => Future.successful(Redirect(routes.RootController.welcome))
     }
   }
+
+  def upload = StackAction(parse.multipartFormData) { request =>
+    val r = new Random(new SecureRandom())
+    request.body.file("picture").map { picture =>
+      import java.io.File
+      val filename = Math.abs(r.nextLong())
+      val contentType = picture.contentType
+      picture.ref.moveTo(new File(s"./public/img/uploaded/$filename"))
+      implicit val apiResponseWrites = Json.writes[APIResponse]
+      var apiResponse = APIResponse(
+        code = 200,
+        message = "/assets/img/uploaded/" + filename
+      )
+      Ok(Json.toJson(apiResponse))
+    }.getOrElse {
+      implicit val apiResponseWrites = Json.writes[APIResponse]
+      var apiResponse = APIResponse(
+        code = 500,
+        message = "upload failed"
+      )
+      Ok(Json.toJson(apiResponse))
+    }
+  }
 }

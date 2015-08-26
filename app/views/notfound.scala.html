@@ -1,0 +1,10 @@
+@* このテンプレートの引数 *@
+@(title: String, message: String)
+
+@* main.scala.htmlを呼び出す *@
+@main("エラー " + title) {
+  <div class="message-box">
+    <h1>@title</h1>
+    <div>@message</div>
+  </div>
+}

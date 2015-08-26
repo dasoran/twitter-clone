@@ -27,6 +27,11 @@
     </div>
     <header class="profile-header">
       <div class="profile-floatcontainer">
+        @if(user.id == loginUser.id){
+          <div class="profile-editbutton">
+            <a href="/@user.screen_name/edit"><i class="fa fa-pencil fa-lg"></i></a>
+          </div>
+        }
         <div class="profile-icon"><img src="/assets/@user.profile_image_url" alt="icon"></div>
         <section class="profile-main">
           <h1 class="profile-username">@user.name</h1>

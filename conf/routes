@@ -25,8 +25,12 @@ GET         /debug/userlist                            controllers.DebugControll
 GET         /debug/tweetlist                           controllers.DebugController.tweetList
 GET         /debug/getgraph                            controllers.DebugController.getGraph
 GET         /debug/deletegraph                         controllers.DebugController.deleteGraph
+POST        /upload                                    controllers.ApiController.upload
+GET         /debug/uploadbase                          controllers.DebugController.uploadBase
 GET         /favicon.ico                               controllers.RootController.favicon
 GET         /:screenName                               controllers.RootController.profile(screenName: String)
+GET         /:screenName/edit                          controllers.RootController.edit(screenName: String)
+GET         /:screenName/update                          controllers.RootController.update(screenName: String)
 GET         /:screenName/follow                        controllers.RootController.follow(screenName: String)
 GET         /:screenName/follower                      controllers.RootController.follower(screenName: String)
 GET         /:screenName/makefollow                    controllers.RootController.makeFollow(screenName: String)

@@ -32,7 +32,7 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
       val wordMap: Map[String, Int] = tweets
         .map(_.text)
         .map(text => tokenizer.tokenize(text).toArray)
-        .foldLeft(Map(): Map[String, Int]){(wordMap, tokens) =>
+        .foldLeft(Map(): Map[String, Int]) { (wordMap, tokens) =>
           tokens.map({ token =>
             (token.asInstanceOf[Token].getBaseForm match {
               case null => token.asInstanceOf[Token].getSurfaceForm
@@ -94,16 +94,24 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
                   }
                 }
               }
+              case "形容詞" => features.drop(1).head match {
+                case "非自立" => false
+                case "接尾" => false
+                case x => {
+                  //println(word, x, "aaaaaaaaaaaaa")
+                  true
+                }
+              }
               case _ => false
             }
-          }.map{case (word, features) => word}.foldLeft(wordMap){ (wMap, word) =>
+          }.map { case (word, features) => word }.foldLeft(wordMap) { (wMap, word) =>
             wMap.get(word) match {
               case Some(x) => wMap ++ Map(word -> (x + 1))
               case None => wMap ++ Map(word -> 1)
             }
           }
         }
-      wordMap.toList.sortBy{ case (word, count) => count}.map{case (word, count) => word}.reverse
+      wordMap.toList.sortBy { case (word, count) => count }.map { case (word, count) => word }.reverse
     }
   }
 

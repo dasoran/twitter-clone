@@ -1,0 +1,43 @@
+@* このテンプレートの引数 *@
+@import java.time.format.DateTimeFormatter
+@(loginUser: models.User, user: models.User, tweetsWithUser: List[(models.Tweet, models.User)])
+
+@* main.scala.htmlを呼び出す *@
+@main(user.name + "'s profile") {
+  <div class="index">
+    <div class="timeline-menu">
+      <div class="menu-img"><a href="/"><img src="@routes.Assets.versioned("img/button_home.png")" alt="selected home"></a></div>
+      <div class="menu-img"><a href="/"><img src="@routes.Assets.versioned("img/button_reply.png")" alt="reply"></a></div>
+      <div class="menu-img" id="logout"><a href="/logout"><i class="fa fa-lg fa-sign-out button_logout"></i></a></div>
+    </div>
+    <div class="timeline">
+    </div>
+    <header class="profile-header">
+      <div class="profile-floatcontainer">
+        <form action="/@user.screen_name/update" method="post" id="profileForm">
+          <div class="profile-editbutton" id="profileSaveButton">
+            <i class="fa fa-floppy-o fa-lg"></i>
+          </div>
+          <div class="profile-icon"><img src="/assets/@user.profile_image_url" alt="icon">
+            <input type="hidden" name="profile_image_url" value="@user.profile_image_url"></div>
+          <section class="profile-main">
+            <h1 class="profile-username"><input type="text" name="name" value="@user.name"></h1>
+            <div class="profile-screenname"><input type="text" name="screen_name" value="@@@user.screen_name"></div>
+            <textarea class="profile-text" name="profile_text">@user.description</textarea>
+          </section>
+        </form>
+      </div>
+    </header>
+  </div>
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="@routes.Assets.versioned("js/jquery.min.js")"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="@routes.Assets.versioned("js/bootstrap.min.js")"></script>
+  @post()
+  <script>
+    $('#profileSaveButton').click(function() {
+      $('#profileForm').submit();
+    })
+  </script>
+}

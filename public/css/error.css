@@ -1,0 +1,16 @@
+.message-box {
+  width: 70%;
+  margin: 100px auto;
+  background-color: #F2E9E1;
+}
+
+.message-box > h1 {
+  padding: 30px;
+  background-color: #1C140D;
+  color: #F2E9E1;
+}
+
+.message-box > div {
+  margin-top: 30px;
+  padding: 30px
+}
