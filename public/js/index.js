@@ -1,18 +1,63 @@
 
 var mode = "home";
 
+var topTLElement;
+var topReplyElement;
+
+
+var insertNewerTweet = function() {
+  getTimelineJSON(function(data) {
+    var topTweetId = topTLElement.tweet.id
+    for (var oldPoint = 0; oldPoint < data.length; oldPoint++) {
+      var tweetId = data[oldPoint].tweet.id;
+      if (tweetId == topTweetId) break;
+    }
+    for (oldPoint--; oldPoint != -1; oldPoint--) {
+      var domTweet = createTweet(data[oldPoint].tweet, data[oldPoint].user, data[oldPoint].myId)
+      $('#timeline').prepend(domTweet);
+    }
+    topTLElement = data[0];
+  });
+}
+
+var insertNewerReply = function() {
+  getReplyJSON(function(data) {
+    var topTweetId = topReplyElement.tweet.id
+    for (var oldPoint = 0; oldPoint < data.length; oldPoint++) {
+      var tweetId = data[oldPoint].tweet.id;
+      if (tweetId == topTweetId) break;
+    }
+    for (oldPoint--; oldPoint != -1; oldPoint--) {
+      var domTweet = createTweet(data[oldPoint].tweet, data[oldPoint].user, data[oldPoint].myId)
+      $('#timeline').prepend(domTweet);
+    }
+    topReplyElement = data[0];
+  });
+}
+
+
+var timelineIntervalHandler;
+var replyIntervalHandler;
+
 $('#home').click(function () {
   if (mode != "home") {
     deleteTimeline();
     createLoader();
     mode = "home";
     setButtonToSelected('home');
+    if (replyIntervalHandler != null) {
+      clearInterval(replyIntervalHandler);
+    }
     setTimeout(function() {
       getTimelineJSON(function(data) {
+        topTLElement = data[0];
         deleteTimeline();
         createTimeline(data, function (event, lastId) {
           loadTimeline(lastId);
         });
+        timelineIntervalHandler = setInterval(function() {
+          insertNewerTweet();
+        }, 15 * 1000);
       });
     }, 500);
   }
@@ -24,12 +69,19 @@ $('#reply').click(function () {
     createLoader();
     mode = "reply";
     setButtonToSelected('reply');
+    if (timelineIntervalHandler != null) {
+      clearInterval(timelineIntervalHandler);
+    }
     setTimeout(function() {
       getReplyJSON(function(data) {
+        topReplyElement = data[0];
         deleteTimeline();
         createTimeline(data, function (event, lastId) {
           loadReply(lastId);
         });
+        replyIntervalHandler = setInterval(function() {
+          insertNewerReply();
+        }, 15 * 1000);
       });
     }, 500);
   }
@@ -227,7 +279,14 @@ var deleteTimeline = function () {
 }
 
 var loadTimeline = function (lastId) {
+  var isNew = false;
+  if (lastId == undefined) {
+    isNew = true;
+  }
   getTimelineJSON(function(data, lastId) {
+    if (isNew) {
+      topTLElement = data[0];
+    }
     createTimeline(data, function (event, lastId) {
       loadTimeline(lastId);
     });
@@ -235,7 +294,14 @@ var loadTimeline = function (lastId) {
 };
 
 var loadReply = function (lastId) {
+  var isNew = false;
+  if (lastId == undefined) {
+    isNew = true;
+  }
   getReplyJSON(function(data, lastId) {
+    if (isNew) {
+      topReplyElement = data[0];
+    }
     createTimeline(data, function (event, lastId) {
       loadReply(lastId);
     });
@@ -255,26 +321,21 @@ $('.conversation-index').click(function() {
   var f = $(this);
   var groupId = f.attr('id').split('-')[1];
   getGroupTimelineJSON(function(data,lastId) {
-    $('.index-main-container').append(
-      $('<div></div>', {addClass: 'conversation-detail', on:{click: function() {
+    $('.conversation-detail')
+      .html("")
+      .click(function() {
         $('.conversation-detail').css('left', '100%');
-        setTimeout(function () {
-          $('.conversation-detail').remove();
-        }, 1000);
-      }}})
-        .append(
-          $('<div></div>', {addClass: 'conversation-title', id: 'conversationTitle'})
-            .text('話題：' + f.attr('data-index'))
-        )
-        .append(
-          $('<div></div>', {addClass: 'conversation-timeline', id: 'conversationTimeline', on:{click: function(event) {
-            event.stopPropagation();
-          }}})
-        )
-    );
-    setTimeout(function () {
-      $('.conversation-detail').css('left', 0);
-    }, 300);
+      })
+      .append(
+        $('<div></div>', {addClass: 'conversation-title', id: 'conversationTitle'})
+          .text('話題：' + f.attr('data-index'))
+      )
+      .append(
+        $('<div></div>', {addClass: 'conversation-timeline', id: 'conversationTimeline', on:{click: function(event) {
+          event.stopPropagation();
+        }}})
+      )
+    $('.conversation-detail').css('left', 0);
     createGroupTimeline(data,function (event, lastId) {
       loadGroupTimeline(groupId, lastId);
     });
@@ -283,4 +344,8 @@ $('.conversation-index').click(function() {
 
 
 loadTimeline();
+
+timelineIntervalHandler = setInterval(function() {
+  insertNewerTweet();
+}, 15 * 1000);
 

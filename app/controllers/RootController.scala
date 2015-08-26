@@ -109,7 +109,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
       case Some(user) => {
         manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
           userService.makeFollow(user, userOption.get).map { user =>
-            Thread.sleep(200)
+            Thread.sleep(1000)
             Redirect(routes.RootController.profile(screenName))
           }
         }
@@ -123,7 +123,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
       case Some(user) => {
         manageUserService.getUserByScreenName(screenName).flatMap { userOption =>
           userService.makeUnfollow(user, userOption.get).map { user =>
-            Thread.sleep(200)
+            Thread.sleep(1000)
             Redirect(routes.RootController.profile(screenName))
           }
         }

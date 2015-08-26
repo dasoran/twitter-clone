@@ -13,6 +13,7 @@
     <div class="timeline" id="timeline">
     </div>
     <div class="index-main-container">
+      <div class="conversation-detail"></div>
       @groups.map { case (id, indexes, users, tweetsWithUser) =>
         <div class="conversation">
           <div class="conversation-index" id="group-@id" data-index="@indexes.mkString(",")">@indexes.take(3).mkString(", ")</div>

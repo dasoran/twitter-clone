@@ -21,6 +21,10 @@
   <script>
     $('#tweetForm').submit(function(event) {
       event.preventDefault();
+      $('#tweetModal').append(
+        $('<div></div>', {addClass: 'loading', id: 'loading'})
+          .append($('<img>', {src: '/assets/img/load.gif', alt: 'loading...'}))
+        );
       var f = $(this);
       $.ajax({
         type: 'POST',
@@ -28,13 +32,20 @@
         dataType: 'json',
         data: f.serialize(),
         success: function(data) {
-          console.log('reload');
+          $('#loading').remove();
+          $('#tweetInput').val('');
+          $('#tweetModal').modal('hide');
+          if (mode == 'home') {
+            insertNewerTweet();
+          } else {
+            insertNewerReply();
+          }
         }
       });
     });
  
     var isShown = false;
-    $('body').keypress(function() {
+    $('body').keypress(function(event) {
       if (event.which == 110) {
         $('#tweetModal').modal();
       }
@@ -42,6 +53,7 @@
         if (event.ctrlKey) {
           if (event.which == 13) {
             $('#tweetForm').submit();
+            return false;
           }
         }
       }

@@ -1,7 +1,7 @@
 .index-main-container  {
   position: relative;
   width: calc(100% - 500px - 50px);
-  height: 100%;
+  height: calc(100% + 10px);
   overflow-y: scroll;
   float: left;
   margin-top: -10px;
@@ -58,7 +58,7 @@
   border: 5px solid #1C140D;
   border-radius: 5px;
   padding: 30px;
-  transition: left 0.5s ease-out;
+  transition: left 0.3s ease-out;
 }
 .conversation-detail:after {
   display: block;
@@ -69,8 +69,9 @@
 .conversation-title {
   width: 100%;
   float: left;
-  padding: 30px;
+  padding: 0 30px 30px 30px;
   color: #F2E9E1;
+  font-size: 2em;
 }
 
 .conversation-timeline {

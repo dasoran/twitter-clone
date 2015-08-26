@@ -261,7 +261,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
               favorited_user_id = List()
             )
             manageTweetService.insertTweet(tweet).map { f =>
-              Thread.sleep(200)
+              Thread.sleep(1000)
               implicit val apiResponseWrites = Json.writes[APIResponse]
               val apiResponse = APIResponse(
                 code = 200,
