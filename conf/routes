@@ -14,6 +14,7 @@ POST        /authenticate                              controllers.AuthControlle
 GET         /api/timeline                              controllers.ApiController.timeline
 GET         /api/timeline/:lastId                      controllers.ApiController.timelineUpdate(lastId: Long)
 GET         /api/grouptimeline/:groupId                controllers.ApiController.groupTimeline(groupId: Long)
+GET         /api/getindex/:groupId                     controllers.ApiController.getIndex(groupId: Long)
 GET         /api/grouptimeline/:groupId/:lastId        controllers.ApiController.groupTimelineUpdate(groupId: Long, lastId: Long)
 GET         /api/reply                                 controllers.ApiController.reply
 GET         /api/reply/:lastId                         controllers.ApiController.replyUpdate(lastId: Long)
@@ -21,7 +22,8 @@ POST        /api/tweet                                 controllers.ApiController
 GET         /api/addFavorite/:tweetId                  controllers.ApiController.addFavorite(tweetId: Long)
 GET         /api/removeFavorite/:tweetId               controllers.ApiController.removeFavorite(tweetId: Long)
 POST        /upload                                    controllers.ApiController.upload
-GET         /debug/userlist                             controllers.DebugController.userList
+GET         /conversation/:groupId                     controllers.RootController.conversation(groupId: Long)
+GET         /debug/userlist                            controllers.DebugController.userList
 GET         /favicon.ico                               controllers.RootController.favicon
 GET         /:screenName                               controllers.RootController.profile(screenName: String)
 GET         /:screenName/edit                          controllers.RootController.edit(screenName: String)

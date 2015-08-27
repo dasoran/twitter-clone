@@ -166,6 +166,19 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
     }
   }
 
+  def getIndex(groupId: Long) = AsyncStack {implicit rs =>
+    loggedIn match {
+      case Some(user) => {
+        manageGroupService.getGroupById(groupId).flatMap { group =>
+          graphService.createIndex(group.get).map { indexes =>
+            Ok(Json.toJson(indexes.take(5)))
+          }
+        }
+      }
+      case None => Future.successful(Redirect(routes.RootController.welcome))
+    }
+  }
+
   def replyUpdate(lastId: Long) = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) =>

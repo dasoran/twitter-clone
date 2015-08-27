@@ -1,0 +1,25 @@
+@* このテンプレートの引数 *@
+@(loginUser: User, groupId: Long)
+
+@* main.scala.htmlを呼び出す *@
+@main("Home") {
+  <div class="index">
+    @menunoindex(loginUser.screen_name, "")
+    <div class="timeline" id="timeline-@groupId">
+    </div>
+    <div class="conversations-title" id="conversationsTitle"></div>
+    <div class="index-main-container">
+    </div>
+  </div>
+
+
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="@routes.Assets.versioned("js/jquery.min.js")"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="@routes.Assets.versioned("js/bootstrap.min.js")"></script>
+  @post()
+
+
+  <script src="@routes.Assets.versioned("js/conversation.js")"></script>
+}

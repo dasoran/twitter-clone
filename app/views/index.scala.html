@@ -11,6 +11,7 @@
     <div class="conversations-title">あなたのタイムラインで話題の会話</div>
     <div class="index-main-container">
       @groups.map { case (id, indexes, users, tweetsWithUser) =>
+        <a href="/conversation/@id">
         <div class="conversation">
           <div class="conversation-index" id="group-@id" data-index="@indexes.mkString(",")"><i class="fa fa-external-link"></i> @indexes.take(3).mkString(", ")</div>
           <div class="conversation-members">
@@ -31,6 +32,7 @@
             }
           </div>
         </div>
+        </a>
       }
     </div>
   </div>

@@ -204,4 +204,13 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
       }
     )
   }
+
+  def conversation(groupId: Long) = AsyncStack{implicit rs =>
+    loggedIn match {
+      case Some(user) => {
+        Future(Ok(views.html.conversation(user, groupId)));
+      }
+      case None => Future(Ok(views.html.notfound("権限がありません", "会話はログインしなければ見れません。")))
+    }
+  }
 }
