@@ -5,7 +5,7 @@
 @* main.scala.htmlを呼び出す *@
 @main(user.name + "'s profile") {
   <div class="index">
-    @menunoindex(loginUser.screen_name)
+    @menunoindex(loginUser.screen_name, "user")
     <div class="timeline">
       @tweetsWithUser.map { case (tweet, user) =>
         <section class="timeline-tweet">
@@ -33,7 +33,6 @@
           <h1 class="profile-username">@user.name</h1>
           <div class="profile-screenname">@@@user.screen_name</div>
           @if(user.id == loginUser.id){
-            <div class="profile-relation-with-you"><a href="#">You</a></div>
           } else { @if(user.follower.contains(loginUser.id)) {
             <div class="profile-relation-with-you"><a href="/@user.screen_name/makeunfollow">Following(click でリムーブする)</a></div>
           } else {

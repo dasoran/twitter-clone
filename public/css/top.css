@@ -47,6 +47,7 @@ body {
 input.welcome-login-send {
   opacity: 1;
   color: #000;
+  border-radius: 8px;
 }
 
 div.welcome-login-signup {
@@ -59,6 +60,7 @@ div.welcome-login-signup {
   opacity: 1;
   color: #fff;
   background-color: #322;
+  border-radius: 8px;
 }
 
 .welcome-signup-form {
@@ -76,6 +78,7 @@ input.welcome-signup-send {
   opacity: 1;
   color: #fff;
   background-color: #322;
+  border-radius: 8px;
 }
 
 div.welcome-signup-login {
@@ -88,6 +91,7 @@ div.welcome-signup-login {
   opacity: 1;
   background-color: #ddd;
   color: #000;
+  border-radius: 8px;
 }
 
 .welcome-mainpanel {

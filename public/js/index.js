@@ -92,18 +92,20 @@ $('#reply').click(function () {
 });
 
 var setButtonToSelected = function (button) {
-  var buttonList = {
-    'home':{notselected: 'assets/img/button_home.png', selected: 'assets/img/button_selected_home.png'},
-    'reply':{notselected: 'assets/img/button_reply.png', selected: 'assets/img/button_selected_reply.png'}
-  };
-  var menuImgs = $('.menu-img');
-  for (var i = 0; i < menuImgs.length; i++) {
-    if ($(menuImgs[i]).attr('id') == 'logout') continue;
-    if ($(menuImgs[i]).attr('id') == 'tweet') continue;
-    if ($(menuImgs[i]).attr('id') == 'user') continue;
-    $('img', menuImgs[i]).attr('src', buttonList[menuImgs[i].id].notselected);
-  }
-  $('.menu-img#' + button + ' > img').attr('src', buttonList[button].selected);
+  //var buttonList = {
+  //  'home':{notselected: 'assets/img/button_home.png', selected: 'assets/img/button_selected_home.png'},
+  //  'reply':{notselected: 'assets/img/button_reply.png', selected: 'assets/img/button_selected_reply.png'}
+  //};
+  //var menuImgs = $('.menu-img');
+  //for (var i = 0; i < menuImgs.length; i++) {
+  //  if ($(menuImgs[i]).attr('id') == 'logout') continue;
+  //  if ($(menuImgs[i]).attr('id') == 'tweet') continue;
+  //  if ($(menuImgs[i]).attr('id') == 'user') continue;
+  //  $('img', menuImgs[i]).attr('src', buttonList[menuImgs[i].id].notselected);
+  //}
+  //$('.menu-img#' + button + ' > img').attr('src', buttonList[button].selected);
+  $('.menu-img').removeClass("selected");
+  $('.menu-img#' + button).addClass("selected");
 }
 
 
@@ -178,7 +180,11 @@ var createTweet = function(tweet, user, myId) {
                 $('#tweetInput').val('RT @' + user.screen_name + ": " + tweet.text);
                 $('#tweetModal').modal();
               }}})
-            )
+            )/*
+              .append(
+              $('<i></i>', {addClass: 'fa fa-trash-o', on: {click: function(event) {
+              }}})
+          )*/
         )
     );
 }

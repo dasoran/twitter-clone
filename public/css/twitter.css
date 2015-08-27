@@ -40,18 +40,47 @@ body {
   color: #F2E9E1;
 }
 
+.menu-home {
+  width: 47px;
+  height: 33px;
+  text-align: center;
+  color: #F2E9E1;
+  padding: 7px;
+}
+
+.menu-reply {
+  width: 47px;
+  height: 33px;
+  text-align: center;
+  color: #F2E9E1;
+  padding: 7px;
+}
+
 .menu-user {
   width: 47px;
   height: 33px;
   text-align: center;
   color: #F2E9E1;
+  padding: 7px;
 }
 .menu-tweet {
   width: 47px;
   height: 33px;
   text-align: center;
   color: #F2E9E1;
+  margin-bottom: 100px;
+  padding: 7px;
 }
+
+.selected {
+  color: #1C140D;
+  background-color: #F2E9E1;
+}
+
+.selected > a > i {
+  color: #1C140D;
+}
+
 .menu-logout {
   position: absolute;
   bottom: 0;
@@ -60,6 +89,7 @@ body {
   text-align: center;
   color: #F2E9E1;
 }
+
 .button_logout {
   color: #F2E9E1;
 }

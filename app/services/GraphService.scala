@@ -75,7 +75,7 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
                     }
                   }
                 }
-              }
+              }/*
               case "動詞" => features.drop(1).head match {
                 case "非自立" => false
                 case "接尾" => false
@@ -95,13 +95,16 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
                     }
                   }
                 }
-              }
+              }*/
               case "形容詞" => features.drop(1).head match {
                 case "非自立" => false
                 case "接尾" => false
                 case x => {
                   //println(word, x, "aaaaaaaaaaaaa")
-                  true
+                  word match {
+                    case "ない" => false
+                    case _ => true
+                  }
                 }
               }
               case _ => false

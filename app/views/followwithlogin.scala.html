@@ -4,7 +4,7 @@
 @* main.scala.htmlを呼び出す *@
 @main("ユーザ一覧") {
   <div class="index">
-    @menunoindex(loginUser.screen_name)
+    @menunoindex(loginUser.screen_name, "")
     <div class="timeline">
       @users.map { user =>
         <section class="follow-item">

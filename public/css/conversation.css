@@ -20,7 +20,6 @@
   /*float: left;*/
   margin-top: 20px;
   margin-left: 20px;
-  border-radius: 5px 5px 0 0;
   border: 2px solid #F2E9E1;
 }
 .conversation-index {
@@ -57,7 +56,6 @@
   margin: 40px 30px 30px 30px;
   background-color: rgba( 22, 14, 13, 0.9 );
   border: 5px solid #1C140D;
-  border-radius: 5px;
   padding: 30px;
   transition: left 0.3s ease-out;
 }
