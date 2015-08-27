@@ -20,12 +20,7 @@ GET         /api/reply/:lastId                         controllers.ApiController
 POST        /api/tweet                                 controllers.ApiController.postTweet
 GET         /api/addFavorite/:tweetId                  controllers.ApiController.addFavorite(tweetId: Long)
 GET         /api/removeFavorite/:tweetId               controllers.ApiController.removeFavorite(tweetId: Long)
-GET         /debug/userlist                            controllers.DebugController.userList
-GET         /debug/tweetlist                           controllers.DebugController.tweetList
-GET         /debug/getgraph                            controllers.DebugController.getGraph
-GET         /debug/deletegraph                         controllers.DebugController.deleteGraph
 POST        /upload                                    controllers.ApiController.upload
-GET         /debug/uploadbase                          controllers.DebugController.uploadBase
 GET         /favicon.ico                               controllers.RootController.favicon
 GET         /:screenName                               controllers.RootController.profile(screenName: String)
 GET         /:screenName/edit                          controllers.RootController.edit(screenName: String)

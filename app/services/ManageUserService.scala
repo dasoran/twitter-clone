@@ -74,8 +74,10 @@ class ManageUserWithElasticsearchService extends ManageUserService with ManageEl
   // insertだから待つ必要なし
   // もしかしたらあとでuniqueチェック的なものでbool返す必要が有るかもしれない。それをするなら待たないといけないかも....
   def insertUser(user: User): Future[Any] = {
-    AsyncESClient.apply(serverUrl).insertAsync(config, user)
-
+    getUserById(user.id).flatMap {
+      case Some(x) => Future()
+      case None => AsyncESClient.apply(serverUrl).insertAsync(config, user)
+    }
 //    /* 検証用 */
 //    .flatMap{f =>
 //      AsyncESClient.apply(serverUrl).listAsync[User](config){ searcher =>
