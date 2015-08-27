@@ -129,12 +129,15 @@ var createTweet = function(tweet, user, myId) {
         .append(
           $('<footer></footer>', {addClass: 'tweet-footer'})
           .append(
-            $('<div></div>', {addClass: 'tweet-username'})
-              .text(user.name)
-          )
-          .append(
-            $('<div></div>', {addClass: 'tweet-screenname'})
-              .text('@' + user.screen_name)
+              $('<a></a>', {href: '/' + user.screen_name})
+            .append(
+              $('<div></div>', {addClass: 'tweet-username'})
+                .text(user.name)
+            )
+            .append(
+              $('<div></div>', {addClass: 'tweet-screenname'})
+                .text('@' + user.screen_name)
+            )
           )
           .append(
             $('<div></div>', {addClass: 'tweet-diffdate'})

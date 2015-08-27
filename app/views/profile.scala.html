@@ -28,12 +28,12 @@
         <section class="profile-main">
           <h1 class="profile-username">@user.name</h1>
           <div class="profile-screenname">@@@user.screen_name</div>
+          <div class="profile-relation">
+            <a href="/@user.screen_name/follow"><div class="profile-follow">Follow @user.follow.size</div></a>
+            <a href="/@user.screen_name/follower"><div class="profile-follower">Follower @user.follower.size</div></a>
+          </div>
           <p class="profile-text">@user.description</p>
         </section>
-      </div>
-      <div class="profile-relation">
-        <a href="/@user.screen_name/follow"><div class="profile-follow">Follow @user.follow.size</div></a>
-        <a href="/@user.screen_name/follower"><div class="profile-follower">Follower @user.follower.size</div></a>
       </div>
     </header>
   </div>

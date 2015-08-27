@@ -101,7 +101,7 @@ trait AuthConfigImpl extends AuthConfig {
      * デフォルトでは利便性のために false になっていますが、
      * 実際のアプリケーションでは true にすることを強く推奨します。
      */
-    cookieSecureOption = play.api.Play.isProd(play.api.Play.current),
+    cookieSecureOption = false,
     cookieMaxAge       = Some(sessionTimeoutInSeconds)
   )
 

@@ -46,6 +46,7 @@ body {
   text-align: center;
   color: #F2E9E1;
   padding: 7px;
+  cursor:pointer;
 }
 
 .menu-reply {
@@ -54,6 +55,7 @@ body {
   text-align: center;
   color: #F2E9E1;
   padding: 7px;
+  cursor:pointer;
 }
 
 .menu-user {
@@ -70,6 +72,7 @@ body {
   color: #F2E9E1;
   margin-bottom: 100px;
   padding: 7px;
+  cursor:pointer;
 }
 
 .menu-conversations {
