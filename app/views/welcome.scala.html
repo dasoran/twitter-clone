@@ -1,8 +1,21 @@
-
+@(message: Option[String])
 
 @maintop("welcome") {
 <div class="welcome-container">
   <div class="welcome-message">
+
+    @message match {
+
+      case Some(x) => {
+        <div class="alert alert-danger alert-dismissible fade in" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          @x
+        </div>
+      }
+
+      case None => {}
+    }
+
     <h1>Connectter</h1>
     <h2>毎日のコミュニケーションに新しい広がりを</h2>
     

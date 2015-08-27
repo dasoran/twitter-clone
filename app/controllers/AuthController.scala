@@ -43,7 +43,7 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
 
   def signup = Action.async { implicit rs =>
     Future {
-      Ok(views.html.signup())
+      Ok(views.html.signup(None))
     }
   }
 
@@ -53,7 +53,9 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
 
   def authenticate = Action.async { implicit request =>
     loginForm.bindFromRequest.fold(
-      formWithErrors => Future.successful(Redirect(routes.RootController.index)),
+      formWithErrors => Future{
+        BadRequest(views.html.welcome(Option("情報が間違っています。再度入力をお願いします。")))
+      },
       user => gotoLoginSucceeded(user.get.id)
     )
   }
@@ -66,7 +68,7 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
         //BadRequest(views.html.signup(error, signupForm))
         println(error.errorsAsJson)
         Future {
-          BadRequest(views.html.signup())
+          BadRequest(views.html.signup(Option("入力されたデータが不正です。再度入力をお願いします。")))
         }
       },
       // OKの場合

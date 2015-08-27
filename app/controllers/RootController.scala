@@ -62,7 +62,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
   }
 
   def welcome = Action.async { implicit rs =>
-    Future(Ok(views.html.welcome()))
+    Future(Ok(views.html.welcome(None)))
   }
 
   def profile(screenName: String) = AsyncStack { implicit rs =>
