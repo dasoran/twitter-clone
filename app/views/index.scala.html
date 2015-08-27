@@ -8,9 +8,8 @@
     @menu(loginUser.screen_name)
     <div class="timeline" id="timeline">
     </div>
+    <div class="conversations-title">あなたのタイムラインで話題の会話</div>
     <div class="index-main-container">
-      <div class="conversations-title">あなたのタイムラインで話題の会話</div>
-      <div class="conversation-detail"></div>
       @groups.map { case (id, indexes, users, tweetsWithUser) =>
         <div class="conversation">
           <div class="conversation-index" id="group-@id" data-index="@indexes.mkString(",")"><i class="fa fa-external-link"></i> @indexes.take(3).mkString(", ")</div>
@@ -46,4 +45,11 @@
 
 
   <script src="@routes.Assets.versioned("js/index.js")"></script>
+  <script src="@routes.Assets.versioned("js/masonry.pkgd.min.js")"></script>
+
+  <script>
+    $($('.index-main-container')[0]).masonry({
+      itemSelector: '.conversation'
+    })
+  </script>
  }

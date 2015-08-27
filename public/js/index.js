@@ -329,7 +329,7 @@ var loadGroupTimeline = function (groupId, lastId) {
 };
 
 
-$('.conversation-index').click(function() {
+/*$('.conversation-index').click(function() {
   var f = $(this);
   var groupId = f.attr('id').split('-')[1];
   getGroupTimelineJSON(function(data,lastId) {
@@ -352,7 +352,7 @@ $('.conversation-index').click(function() {
       loadGroupTimeline(groupId, lastId);
     });
   }, groupId);
-});
+});*/
 
 
 loadTimeline();
