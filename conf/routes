@@ -21,6 +21,7 @@ POST        /api/tweet                                 controllers.ApiController
 GET         /api/addFavorite/:tweetId                  controllers.ApiController.addFavorite(tweetId: Long)
 GET         /api/removeFavorite/:tweetId               controllers.ApiController.removeFavorite(tweetId: Long)
 POST        /upload                                    controllers.ApiController.upload
+GET         /debug/userlist                             controllers.DebugController.userList
 GET         /favicon.ico                               controllers.RootController.favicon
 GET         /:screenName                               controllers.RootController.profile(screenName: String)
 GET         /:screenName/edit                          controllers.RootController.edit(screenName: String)
