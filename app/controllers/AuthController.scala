@@ -23,7 +23,7 @@ class AuthController @Inject()(val messagesApi: MessagesApi,
 with I18nSupport with LoginLogout with AuthConfigImpl {
 
 
-  val emailPattern = Constraints.pattern("[\\w\\d_-]+@[\\w\\d_-]+\\.[\\w\\d._-]+".r)
+  val emailPattern = Constraints.pattern("[\\w\\d._-]+@[\\w\\d_-]+\\.[\\w\\d._-]+".r)
   val signupForm = Form(
     mapping(
       "signupInputUserId1" -> nonEmptyText(maxLength = 20),

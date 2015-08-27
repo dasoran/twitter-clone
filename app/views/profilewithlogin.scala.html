@@ -35,9 +35,9 @@
           @if(user.id == loginUser.id){
             <div class="profile-relation-with-you"><a href="#">You</a></div>
           } else { @if(user.follower.contains(loginUser.id)) {
-            <div class="profile-relation-with-you"><a href="/@user.screen_name/makeunfollow">Following</a></div>
+            <div class="profile-relation-with-you"><a href="/@user.screen_name/makeunfollow">Following(click でリムーブする)</a></div>
           } else {
-            <div class="profile-relation-with-you"><a href="/@user.screen_name/makefollow">No Relationship</a></div>
+            <div class="profile-relation-with-you"><a href="/@user.screen_name/makefollow">No Relationship(click でフォローする)</a></div>
           }}
           <p class="profile-text">@user.description</p>
         </section>
