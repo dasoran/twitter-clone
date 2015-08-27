@@ -36,7 +36,11 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
 
             graphService.createGraph.flatMap { case (uservecs, groups) =>
               val futures: List[Future[(Long, List[String], List[User], List[(Tweet, User)])]] =
-                groups.filter(_.users.size > 1).map { group =>
+                groups.filter(_.users.size > 1).filter{ group =>
+                  user.follow.map { followUser =>
+                    group.users.contains(followUser)
+                  }.foldLeft(false){(result, condition) => (condition || result)}
+                }.map { group =>
                   graphService.createIndex(group).flatMap { indexes =>
                     manageTweetService.getTweetsByUserIdList(group.users.toList, 5).flatMap { tweets =>
                       manageUserService.getUsersByUserIdList(group.users.toList).map { users =>

@@ -5,13 +5,21 @@
   overflow-y: scroll;
   overflow-x: hidden;
   float: left;
-  margin-top: -10px;
+  padding: 20px;
 }
 .index-main-container:after  {
   display: block;
   clear: both;
   content: "";
 }
+
+.conversations-title {
+  color: #ffffff;
+  margin-left: 20px;
+  width: 100%;
+  font-size: 1.5em;
+}
+
 .conversation {
   display: inline-block;
   vertical-align: top;
