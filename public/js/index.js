@@ -334,7 +334,7 @@ $('.conversation-index').click(function() {
       })
       .append(
         $('<div></div>', {addClass: 'conversation-title', id: 'conversationTitle'})
-          .text('話題：' + f.attr('data-index'))
+          .html('<i class="fa fa-times fa-lg"></i> 話題：' + f.attr('data-index'))
       )
       .append(
         $('<div></div>', {addClass: 'conversation-timeline', id: 'conversationTimeline', on:{click: function(event) {

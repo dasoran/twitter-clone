@@ -12,7 +12,7 @@
       <div class="conversation-detail"></div>
       @groups.map { case (id, indexes, users, tweetsWithUser) =>
         <div class="conversation">
-          <div class="conversation-index" id="group-@id" data-index="@indexes.mkString(",")">@indexes.take(3).mkString(", ")</div>
+          <div class="conversation-index" id="group-@id" data-index="@indexes.mkString(",")"><i class="fa fa-external-link"></i> @indexes.take(3).mkString(", ")</div>
           <div class="conversation-members">
             @users.map { user =>
               <div class="conversation-member"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
