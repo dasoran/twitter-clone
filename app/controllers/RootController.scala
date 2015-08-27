@@ -177,7 +177,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
       "name" -> nonEmptyText(maxLength = 50),
       "screen_name" -> nonEmptyText(maxLength = 20),
       "profile_image_url" -> nonEmptyText(maxLength = 200),
-      "profile_text" -> nonEmptyText(maxLength = 200)
+      "profile_text" -> text(maxLength = 200)
     )(ProfileForm.apply)(ProfileForm.unapply)
   )
 
