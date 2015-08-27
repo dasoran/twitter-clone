@@ -213,4 +213,32 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
       case None => Future(Ok(views.html.notfound("権限がありません", "会話はログインしなければ見れません。")))
     }
   }
+
+  def conversations = AsyncStack{implicit rs =>
+    loggedIn match {
+      case Some(user) => {
+        graphService.createGraph.flatMap { case (uservecs, groups) =>
+          val futures: List[Future[(Long, List[String], List[User], List[(Tweet, User)])]] =
+            groups.filter(_.users.size > 1).map { group =>
+              graphService.createIndex(group).flatMap { indexes =>
+                manageTweetService.getTweetsByUserIdList(group.users.toList, 5).flatMap { tweets =>
+                  manageUserService.getUsersByUserIdList(group.users.toList).map { users =>
+                    (group.id, indexes.take(5), users, tweets.map { tweet =>
+                      (tweet, users.find(user => user.id == tweet.user_id))
+                    }.filter { case (tweet, user) => user.isDefined }
+                      .map { case (tweet, user) => (tweet, user.get) })
+                  }
+                }
+              }
+            }
+
+          Future.fold(futures)(List(): List[(Long, List[String], List[User], List[(Tweet, User)])]) { (tweets, tweet) => tweet :: tweets }
+            .map { tweetsOnGroup =>
+              Ok(views.html.conversations(user, tweetsOnGroup))
+            }
+        }
+      }
+      case None => Future(Ok(views.html.notfound("権限がありません", "会話はログインしなければ見れません。")))
+    }
+  }
 }

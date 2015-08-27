@@ -1,0 +1,55 @@
+@* このテンプレートの引数 *@
+@import java.time.format.DateTimeFormatter
+@(loginUser: User, groups: List[(Long, List[String], List[User], List[(models.Tweet, models.User)])])
+
+@* main.scala.htmlを呼び出す *@
+@main("Home") {
+  <div class="index">
+    @menunoindex(loginUser.screen_name, "conversations")
+    <div class="conversations-title">全ユーザーの話題の会話</div>
+    <div class="index-main-container-conversations">
+      @groups.map { case (id, indexes, users, tweetsWithUser) =>
+        <a href="/conversation/@id">
+        <div class="conversation">
+          <div class="conversation-index" id="group-@id" data-index="@indexes.mkString(",")"><i class="fa fa-external-link"></i> @indexes.take(3).mkString(", ")</div>
+          <div class="conversation-members">
+            @users.map { user =>
+              <div class="conversation-member"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
+            }
+          </div>
+          <div class="conversation-preview">
+            @tweetsWithUser.map { case (tweet, user) =>
+              <div class="conversation-preview-tweet-main">
+                <div class="conversation-preview-tweet-img"><a href="/@user.screen_name"><img src="assets/@user.profile_image_url" alt="icon"></a></div>
+                <footer class="conversation-preview-tweet-footer">
+                  <span class="conversation-preview-tweet-username">/@user.name</span>
+                  <span class="conversation-preview-tweet-screenname">@@@user.screen_name</span>
+                </footer>
+                <p class="conversation-preview-tweet-text">@tweet.text</p>
+              </div>
+            }
+          </div>
+        </div>
+        </a>
+      }
+    </div>
+  </div>
+
+
+
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="@routes.Assets.versioned("js/jquery.min.js")"></script>
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="@routes.Assets.versioned("js/bootstrap.min.js")"></script>
+  @post()
+
+
+  <script src="@routes.Assets.versioned("js/index.js")"></script>
+  <script src="@routes.Assets.versioned("js/masonry.pkgd.min.js")"></script>
+
+  <script>
+    $($('.index-main-container-conversations')[0]).masonry({
+      itemSelector: '.conversation'
+    })
+  </script>
+ }

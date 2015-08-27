@@ -23,6 +23,7 @@ GET         /api/addFavorite/:tweetId                  controllers.ApiController
 GET         /api/removeFavorite/:tweetId               controllers.ApiController.removeFavorite(tweetId: Long)
 POST        /upload                                    controllers.ApiController.upload
 GET         /conversation/:groupId                     controllers.RootController.conversation(groupId: Long)
+GET         /conversations                              controllers.RootController.conversations
 GET         /debug/userlist                            controllers.DebugController.userList
 GET         /favicon.ico                               controllers.RootController.favicon
 GET         /:screenName                               controllers.RootController.profile(screenName: String)

@@ -12,6 +12,21 @@
   content: "";
 }
 
+.index-main-container-conversations  {
+  position: relative;
+  width: calc(100% - 50px);
+  height: calc(100% + 10px);
+  overflow-y: scroll;
+  overflow-x: hidden;
+  float: left;
+}
+.index-main-container-conversations:after  {
+  display: block;
+  clear: both;
+  content: "";
+}
+
+
 .conversations-title {
   position: relative;
   color: #ffffff;

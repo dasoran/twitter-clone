@@ -72,6 +72,14 @@ body {
   padding: 7px;
 }
 
+.menu-conversations {
+  width: 47px;
+  height: 33px;
+  text-align: center;
+  color: #F2E9E1;
+  padding: 7px;
+}
+
 .selected {
   color: #1C140D;
   background-color: #F2E9E1;
