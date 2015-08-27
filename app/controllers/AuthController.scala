@@ -8,6 +8,7 @@ import models._
 import models.forms.SignupForm
 import play.api.data._
 import play.api.data.Forms._
+import play.api.data.validation.Constraints
 import services.UserService
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
@@ -22,10 +23,11 @@ class AuthController @Inject()(val messagesApi: MessagesApi,
 with I18nSupport with LoginLogout with AuthConfigImpl {
 
 
+  val emailPattern = Constraints.pattern("[\\w\\d_-]+@[\\w\\d_-]+\\.[\\w\\d._-]+".r)
   val signupForm = Form(
     mapping(
       "signupInputUserId1" -> nonEmptyText(maxLength = 20),
-      "signupInputEmail1" -> nonEmptyText(maxLength = 50),
+      "signupInputEmail1" -> nonEmptyText.verifying(emailPattern),
       "signupInputPassword1" -> nonEmptyText(maxLength = 50)
     )(SignupForm.apply)(SignupForm.unapply)
   )
