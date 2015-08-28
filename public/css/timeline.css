@@ -1,10 +1,12 @@
 .timeline {
+  position: fixed;
   width: 500px;
   height: 100%;
   overflow-y: scroll;
   float: left;
   padding: 10px 10px;
   background-color: #F2E9E1;
+  margin-left: 50px;
 }
 
 /*

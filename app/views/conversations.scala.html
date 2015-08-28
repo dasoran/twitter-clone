@@ -6,7 +6,7 @@
 @main("Home") {
   <div class="index">
     @menunoindex(loginUser.screen_name, "conversations")
-    <div class="conversations-title">全ユーザーの話題の会話</div>
+    <div class="conversations-title-all">全ユーザーの話題の会話</div>
     <div class="index-main-container-conversations">
       @groups.map { case (id, indexes, users, tweetsWithUser) =>
         <a href="/conversation/@id">

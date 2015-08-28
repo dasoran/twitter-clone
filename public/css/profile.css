@@ -3,7 +3,7 @@
  */
 .profile-header {
   width: calc(100% - 550px - 60px);
-  margin: 10px 30px;
+  margin: 10px 0 0 580px;
   padding-top: 30px;
   border-radius: 5px;
   background-color: #F2E9E1;
