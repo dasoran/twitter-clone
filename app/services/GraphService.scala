@@ -28,7 +28,7 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
 
 
     manageTweetService.getTweetsByUserIdList(group.users.toList, 100).map { tweets =>
-      val pattern = "([a-zA-Z]+)".r
+      val pattern = "([a-zA-Z<>=\"'@./:;# ()_!]+)".r
       val pattern2 = "([あ-ん])".r
       val wordMap: Map[String, Int] = tweets
         .map(_.text)
@@ -49,24 +49,9 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
                 case x => {
                   //println(word, x, "aaaaaaaa")
                   word match {
-                    case "@" => false
-                    case "." => false
-                    case "://" => false
-                    case "/" => false
-                    case ":" => false
-                    case "#" => false
-                    case "  #" => false
-                    case "_" => false
                     case "ー" => false
-                    case "(" => false
-                    case ")" => false
                     case "-" => false
-                    case "'" => false
-                    case "!" => false
                     case "^" => false
-                    case "\"" => false
-                    case "..." => false
-                    case "...!" => false
                     case pattern(z) => false
                     case pattern2(z) => false
                     case y => {
