@@ -42,6 +42,8 @@ trait ManageTweetService {
   def insertTweet(tweet: Tweet): Future[Any]
 
   def updateTweet(tweet: Tweet): Future[Any]
+
+  def deleteTweet(tweetId: Long): Future[Any]
 }
 
 class ManageTweetWithElasticsearchService extends ManageTweetService with ManageElasticsearch {
@@ -194,5 +196,10 @@ class ManageTweetWithElasticsearchService extends ManageTweetService with Manage
       favorited_user_id = tweet.favorited_user_id
     )
     AsyncESClient.apply(serverUrl).updateAsync(config, toUpdate.id.toString, toUpdate)
+  }
+
+
+  def deleteTweet(tweetId: Long): Future[Any] = {
+    AsyncESClient.apply(serverUrl).deleteAsync(config, tweetId.toString)
   }
 }

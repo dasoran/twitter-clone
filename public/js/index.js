@@ -114,7 +114,7 @@ var createTweet = function(tweet, user, myId) {
   if (tweet.favorited_user_id.indexOf(myId) != -1) {
     favClass = 'tweet-favorited';
   }
-  return $('<section></section>', {addClass: 'timeline-tweet'})
+  var thisTweet = $('<section></section>', {addClass: 'timeline-tweet'})
     .append(
       $('<div></div>', {addClass: 'tweet-main'})
         .append(
@@ -167,7 +167,7 @@ var createTweet = function(tweet, user, myId) {
                 }
                 $.ajax({
                   typw: 'GET',
-                  url: url, 
+                  url: url,
                   dataType: 'json',
                   success: function(f) {
                     return function(data) {
@@ -183,13 +183,26 @@ var createTweet = function(tweet, user, myId) {
                 $('#tweetInput').val('RT @' + user.screen_name + ": " + tweet.text);
                 $('#tweetModal').modal();
               }}})
-            )/*
-              .append(
-              $('<i></i>', {addClass: 'fa fa-trash-o', on: {click: function(event) {
-              }}})
-          )*/
+            )
+            .append(
+              function () {
+                if (tweet.user_id == myId) {
+                  return $('<i></i>', {
+                    addClass: 'fa fa-trash', on: {
+                      click: function (event) {
+                        deleteTweet(function (data) {
+                          $(thisTweet).remove();
+                          console.log(data);
+                        }, tweet.id);
+                      }
+                    }
+                  });
+                }
+              }()
+            )
         )
     );
+  return thisTweet;
 }
 
 var createLoader = function () {
@@ -199,13 +212,25 @@ var createLoader = function () {
     );
 }
 
+var deleteTweet = function (callback, tweetId) {
+  var url = '/api/delete/' + tweetId;
+  $.ajax({
+    type: 'DELETE',
+    url: url,
+    dataType: 'json',
+    success: function(data) {
+      callback(data);
+    }
+  });
+};
+
 var getTimelineJSON = function (callback, lastId) {
   var url = '/api/timeline';
   if (lastId != undefined) {
     url = url + '/' + lastId;
   }
   $.ajax({
-    typw: 'GET',
+    type: 'GET',
     url: url, 
     dataType: 'json',
     success: function(data) {
@@ -220,7 +245,7 @@ var getReplyJSON = function (callback, lastId) {
     url = url + '/' + lastId;
   }
   $.ajax({
-    typw: 'GET',
+    type: 'GET',
     url: url, 
     dataType: 'json',
     success: function(data) {
@@ -235,7 +260,7 @@ var getGroupTimelineJSON = function (callback, groupId, lastId) {
     url = url + '/' + lastId;
   }
   $.ajax({
-    typw: 'GET',
+    type: 'GET',
     url: url, 
     dataType: 'json',
     success: function(data) {

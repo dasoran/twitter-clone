@@ -361,14 +361,14 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
         picture.ref.moveTo(new File(s"./public/img/uploaded/$filename"))
         Thread.sleep(2000)
         implicit val apiResponseWrites = Json.writes[APIResponse]
-        var apiResponse = APIResponse(
+        val apiResponse = APIResponse(
           code = 200,
           message = "img/uploaded/" + filename
         )
         Ok(Json.toJson(apiResponse))
       }.getOrElse {
         implicit val apiResponseWrites = Json.writes[APIResponse]
-        var apiResponse = APIResponse(
+        val apiResponse = APIResponse(
           code = 500,
           message = "upload failed"
         )
@@ -376,4 +376,45 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
       }
     }
   }
+
+  def delete(tweetId: Long) = AsyncStack { implicit rs =>
+    loggedIn match {
+      case Some(user) => {
+        manageTweetService.getTweetById(tweetId).flatMap {
+          case Some(x) => {
+            x match {
+              case x if x.user_id == user.id => {
+                manageTweetService.deleteTweet(tweetId).map { f=>
+                  implicit val apiResponseWrites = Json.writes[APIResponse]
+                  val apiResponse = APIResponse(
+                    code = 200,
+                    message = "sccessful"
+                  )
+                  Ok(Json.toJson(apiResponse))
+                }
+              }
+              case _ => {
+                implicit val apiResponseWrites = Json.writes[APIResponse]
+                val apiResponse = APIResponse(
+                  code = 500,
+                  message = "The tweet is not your's tweet"
+                )
+                Future(Ok(Json.toJson(apiResponse)))
+              }
+            }
+          }
+          case None => {
+            implicit val apiResponseWrites = Json.writes[APIResponse]
+            val apiResponse = APIResponse(
+              code = 500,
+              message = "tweet not exist"
+            )
+            Future(Ok(Json.toJson(apiResponse)))
+          }
+        }
+      }
+      case None => Future.successful(Redirect(routes.RootController.welcome))
+    }
+  }
+
 }
