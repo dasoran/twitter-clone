@@ -82,8 +82,8 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
           name = form.signupInputUserId1,
           description = "",
           profile_image_url = "/img/default-icon.png",
-          follow = List(),
-          follower = List(),
+          follow = Nil,
+          follower = Nil,
           email = Option(form.signupInputEmail1)
         )
 

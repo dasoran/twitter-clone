@@ -257,7 +257,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
               user_id = user.id,
               text = form.tweetInput,
               created_at = LocalDateTime.now().plusHours(-9),
-              favorited_user_id = List()
+              favorited_user_id = Nil
             )
             manageTweetService.insertTweet(tweet).map { f =>
               Thread.sleep(1000)

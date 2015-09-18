@@ -122,7 +122,7 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
               case None => None
             }
           }
-          Future.fold(futures)(List(): List[Option[(Tweet, String, User)]]) { (users, user) => user :: users }
+          Future.fold(futures)(Nil: List[Option[(Tweet, String, User)]]) { (users, user) => user :: users }
             .map { users =>
               val uservecs: List[Uservector] = users.filter(user => user.isDefined).map(_.get)
                 .map { case (tweet, screen_name, toUser) =>
@@ -139,7 +139,7 @@ class GraphService @Inject()(val manageUserService: ManageUserService,
                     case None => Map(relation._1 -> Map(relation._2 -> 1))
                   }
                   relationMap ++ next
-              }.foldLeft(List(): List[Uservector]) { (uservecs, relations) =>
+              }.foldLeft(Nil: List[Uservector]) { (uservecs, relations) =>
                 val uservec = Uservector(relations._1, relations._2.maxBy(_._2)._1)
                 manageUservectorService.insertUservector(uservec)
                 uservec :: uservecs

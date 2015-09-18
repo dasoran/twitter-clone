@@ -53,7 +53,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
                   }
                 }
 
-              Future.fold(futures)(List(): List[(Long, List[String], List[User], List[(Tweet, User)])]) { (tweets, tweet) => tweet :: tweets }
+              Future.fold(futures)(Nil: List[(Long, List[String], List[User], List[(Tweet, User)])]) { (tweets, tweet) => tweet :: tweets }
                 .map { tweetsOnGroup =>
                   Ok(views.html.index(user, tweetsWithUser, tweetsOnGroup))
                 }
@@ -220,7 +220,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
               }
             }
 
-          Future.fold(futures)(List(): List[(Long, List[String], List[User], List[(Tweet, User)])]) { (tweets, tweet) => tweet :: tweets }
+          Future.fold(futures)(Nil: List[(Long, List[String], List[User], List[(Tweet, User)])]) { (tweets, tweet) => tweet :: tweets }
             .map { tweetsOnGroup =>
               Ok(views.html.conversations(user, tweetsOnGroup))
             }
