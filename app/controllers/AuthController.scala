@@ -4,14 +4,15 @@ import java.security.SecureRandom
 import javax.inject.Inject
 
 import jp.t2v.lab.play2.auth.LoginLogout
-import models._
-import models.forms.SignupForm
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation.Constraints
-import services.UserService
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc._
+
+import models._
+import models.forms.SignupForm
+import services.UserService
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -65,7 +66,6 @@ with I18nSupport with LoginLogout with AuthConfigImpl {
     signupForm.bindFromRequest.fold(
       // エラーの場合
       error => {
-        //BadRequest(views.html.signup(error, signupForm))
         println(error.errorsAsJson)
         Future {
           BadRequest(views.html.signup(Option("入力されたデータが不正です。再度入力をお願いします。")))

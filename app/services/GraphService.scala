@@ -2,15 +2,13 @@ package services
 
 import java.security.SecureRandom
 import java.time.LocalDateTime
+import javax.inject.Inject
 
-import com.google.inject.Inject
-import models.{Group, Uservector, User, Tweet}
+import models._
 
 import scala.concurrent.Future
-import scala.util.Random
-
 import scala.concurrent.ExecutionContext.Implicits.global
-
+import scala.util.Random
 
 import org.atilika.kuromoji.Tokenizer
 import org.atilika.kuromoji.Token

@@ -11,6 +11,9 @@
             <textarea class="form-control" rows="3" id="tweetInput" name ="tweetInput"></textarea>
           </div>
           <div class="modal-footer">
+            <button type="button" class="btn btn-default" id="pictureUpload">
+              <i class="fa fa-picture-o fa-lg"></i>
+            </button>
             <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
             <button type="submit" class="btn btn-primary">Tweet</button>
           </div>
@@ -18,6 +21,57 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
+
+
+
+  <div class="modal fade" id="pictureModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="pictureForm">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Modal title</h4>
+          </div>
+          <div class="modal-body">
+            <input type="file" name="picture" id="picture">
+            <p>アップロードする画像を指定してください。</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" id="uploadButton">Upload</button>
+          </div>
+        </form>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+  <script>
+    $('#pictureUpload').click(function () {
+        $('#pictureModal').modal();
+    })
+
+    $('#uploadButton').click(function() {
+      $('#pictureModal').append(
+        $('<div></div>', {addClass: 'loading', id: 'loading'})
+          .append($('<img>', {src: '/assets/img/load.gif', alt: 'loading...'}))
+        );
+      var formData = new FormData( $('#pictureForm')[0] );
+      $.ajax({
+            url: "/upload",
+            type: 'POST',
+            processData: false,
+            contentType: false,
+            data: formData,
+            dataType: 'json',
+            success: function( data ) {
+                $('#loading').remove();
+                $('#pictureModal').modal('hide');
+                $('#tweetInput').val($('#tweetInput').val() + 'http://54.64.163.172/assets/' + data.message)
+            }
+      });
+      return false;
+    });
+  </script>
   <script>
     $('#tweetForm').submit(function(event) {
       event.preventDefault();

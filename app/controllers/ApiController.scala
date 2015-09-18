@@ -3,20 +3,19 @@ package controllers
 import java.security.SecureRandom
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 
 import jp.t2v.lab.play2.auth.OptionalAuthElement
-import models._
-import models.forms.TweetForm
+
 import play.api.data._
 import play.api.data.Forms._
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{WebSocket, Controller}
-import services._
-
+import play.api.mvc.Controller
 import play.api.libs.json._
-import play.api.libs.functional.syntax._
+
+import models._
+import models.forms.TweetForm
+import services._
 
 import scala.concurrent._
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -45,6 +44,12 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
                           created_at: String,
                           favorited_user_id: List[Long])
 
+
+  implicit val tweetWrites = Json.writes[TweetForJson]
+  implicit val userWrites = Json.writes[models.User]
+  implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
+  implicit val apiResponseWrites = Json.writes[APIResponse]
+
   def timelineUpdate(lastId: Long) = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) => {
@@ -62,9 +67,6 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             }.filter { case (tweet, user) => user.isDefined }
               .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
-            implicit val tweetWrites = Json.writes[TweetForJson]
-            implicit val userWrites = Json.writes[models.User]
-            implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
 
             Ok(Json.toJson(tweetsWithUser))
           }
@@ -91,9 +93,6 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             }.filter { case (tweet, user) => user.isDefined }
               .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
-            implicit val tweetWrites = Json.writes[TweetForJson]
-            implicit val userWrites = Json.writes[models.User]
-            implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
 
             Ok(Json.toJson(tweetsWithUser))
           }
@@ -107,7 +106,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
   def groupTimelineUpdate(groupId: Long, lastId: Long) = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) => {
-        manageGroupService.getGroupById(groupId).flatMap{ group =>
+        manageGroupService.getGroupById(groupId).flatMap { group =>
           manageTweetService.getTweetsByUserIdListToTheTweet(group.get.users.toList, 20, lastId).flatMap { tweets =>
             manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
 
@@ -122,9 +121,6 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
               }.filter { case (tweet, user) => user.isDefined }
                 .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
-              implicit val tweetWrites = Json.writes[TweetForJson]
-              implicit val userWrites = Json.writes[models.User]
-              implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
 
               Ok(Json.toJson(tweetsWithUser))
             }
@@ -138,7 +134,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
   def groupTimeline(groupId: Long) = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) => {
-        manageGroupService.getGroupById(groupId).flatMap{ group =>
+        manageGroupService.getGroupById(groupId).flatMap { group =>
           manageTweetService.getTweetsByUserIdList(group.get.users.toList, 20).flatMap { tweets =>
             manageUserService.getUsersByUserIdList(tweets.map(_.user_id)).map { users =>
 
@@ -153,9 +149,6 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
               }.filter { case (tweet, user) => user.isDefined }
                 .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
-              implicit val tweetWrites = Json.writes[TweetForJson]
-              implicit val userWrites = Json.writes[models.User]
-              implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
 
               Ok(Json.toJson(tweetsWithUser))
             }
@@ -166,7 +159,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
     }
   }
 
-  def getIndex(groupId: Long) = AsyncStack {implicit rs =>
+  def getIndex(groupId: Long) = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) => {
         manageGroupService.getGroupById(groupId).flatMap { group =>
@@ -196,9 +189,6 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             }.filter { case (tweet, user) => user.isDefined }
               .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
-            implicit val tweetWrites = Json.writes[TweetForJson]
-            implicit val userWrites = Json.writes[models.User]
-            implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
 
             Ok(Json.toJson(tweetsWithUser))
           }
@@ -224,9 +214,6 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             }.filter { case (tweet, user) => user.isDefined }
               .map { case (tweet, _user) => TweetWithUser(tweet, _user.get, user.id) }
 
-            implicit val tweetWrites = Json.writes[TweetForJson]
-            implicit val userWrites = Json.writes[models.User]
-            implicit val tweetWithUserWrites = Json.writes[TweetWithUser]
 
             Ok(Json.toJson(tweetsWithUser))
           }
@@ -253,10 +240,8 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
         tweetForm.bindFromRequest.fold(
           // エラーの場合
           error => {
-            //BadRequest(views.html.signup(error, signupForm))
             println(error.errorsAsJson)
             Future {
-              implicit val apiResponseWrites = Json.writes[APIResponse]
               val apiResponse = APIResponse(
                 code = 500,
                 message = "tweet failed"
@@ -276,7 +261,6 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             )
             manageTweetService.insertTweet(tweet).map { f =>
               Thread.sleep(1000)
-              implicit val apiResponseWrites = Json.writes[APIResponse]
               val apiResponse = APIResponse(
                 code = 200,
                 message = "successful"
@@ -293,10 +277,9 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
   def addFavorite(tweetId: Long) = AsyncStack { implicit rs =>
     loggedIn match {
       case Some(user) => {
-        manageTweetService.getTweetById(tweetId).flatMap{ tweet =>
+        manageTweetService.getTweetById(tweetId).flatMap { tweet =>
           if (tweet.get.favorited_user_id.contains(user.id)) {
             Future {
-              implicit val apiResponseWrites = Json.writes[APIResponse]
               val apiResponse = APIResponse(
                 code = 500,
                 message = "already favorited"
@@ -305,8 +288,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             }
           } else {
             val toUpdate = tweet.get.copy(favorited_user_id = user.id :: tweet.get.favorited_user_id)
-            manageTweetService.updateTweet(toUpdate).map{ f =>
-              implicit val apiResponseWrites = Json.writes[APIResponse]
+            manageTweetService.updateTweet(toUpdate).map { f =>
               val apiResponse = APIResponse(
                 code = 200,
                 message = "successful"
@@ -324,10 +306,9 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
 
     loggedIn match {
       case Some(user) => {
-        manageTweetService.getTweetById(tweetId).flatMap{ tweet =>
+        manageTweetService.getTweetById(tweetId).flatMap { tweet =>
           if (!tweet.get.favorited_user_id.contains(user.id)) {
             Future {
-              implicit val apiResponseWrites = Json.writes[APIResponse]
               val apiResponse = APIResponse(
                 code = 500,
                 message = "already unfavorited"
@@ -336,8 +317,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             }
           } else {
             val toUpdate = tweet.get.copy(favorited_user_id = tweet.get.favorited_user_id.filter(_ != user.id))
-            manageTweetService.updateTweet(toUpdate).map{ f =>
-              implicit val apiResponseWrites = Json.writes[APIResponse]
+            manageTweetService.updateTweet(toUpdate).map { f =>
               val apiResponse = APIResponse(
                 code = 200,
                 message = "successful"
@@ -358,16 +338,14 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
         import java.io.File
         val filename = Math.abs(r.nextLong())
         val contentType = picture.contentType
-        picture.ref.moveTo(new File(s"./public/img/uploaded/$filename"))
+        picture.ref.moveTo(new File("./public/img/uploaded/" + filename + "-" + picture.filename))
         Thread.sleep(2000)
-        implicit val apiResponseWrites = Json.writes[APIResponse]
         val apiResponse = APIResponse(
           code = 200,
-          message = "img/uploaded/" + filename
+          message = "img/uploaded/" + filename + "-" + picture.filename
         )
         Ok(Json.toJson(apiResponse))
       }.getOrElse {
-        implicit val apiResponseWrites = Json.writes[APIResponse]
         val apiResponse = APIResponse(
           code = 500,
           message = "upload failed"
@@ -384,8 +362,7 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
           case Some(x) => {
             x match {
               case x if x.user_id == user.id => {
-                manageTweetService.deleteTweet(tweetId).map { f=>
-                  implicit val apiResponseWrites = Json.writes[APIResponse]
+                manageTweetService.deleteTweet(tweetId).map { f =>
                   val apiResponse = APIResponse(
                     code = 200,
                     message = "sccessful"
@@ -394,7 +371,6 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
                 }
               }
               case _ => {
-                implicit val apiResponseWrites = Json.writes[APIResponse]
                 val apiResponse = APIResponse(
                   code = 500,
                   message = "The tweet is not your's tweet"
@@ -404,7 +380,6 @@ with I18nSupport with OptionalAuthElement with AuthConfigImpl {
             }
           }
           case None => {
-            implicit val apiResponseWrites = Json.writes[APIResponse]
             val apiResponse = APIResponse(
               code = 500,
               message = "tweet not exist"
